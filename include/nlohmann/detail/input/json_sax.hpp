@@ -232,10 +232,7 @@ class json_sax_dom_parser
 
         if (m_lexer)
         {
-            if (!ref_stack.empty())
-            {
-                ref_stack.back()->start_position = m_lexer->get_position() - 1;
-            }
+            ref_stack.back()->start_position = m_lexer->get_position() - 1;
         }
 
         if (JSON_HEDLEY_UNLIKELY(len != static_cast<std::size_t>(-1) && len > ref_stack.back()->max_size()))
@@ -258,16 +255,15 @@ class json_sax_dom_parser
 
     bool end_object()
     {
-        if (m_lexer)
-        {
-            if (!ref_stack.empty())
-            {
-                (*ref_stack.rbegin())->end_position = m_lexer->get_position() - 1;
-            }
-        }
 
         JSON_ASSERT(!ref_stack.empty());
         JSON_ASSERT(ref_stack.back()->is_object());
+
+        if (m_lexer)
+        {
+            // set end position of the object (inclusive)
+            ref_stack.back()->end_position = m_lexer->get_position();
+        }
 
         ref_stack.back()->set_parents();
         ref_stack.pop_back();
@@ -277,6 +273,11 @@ class json_sax_dom_parser
     bool start_array(std::size_t len)
     {
         ref_stack.push_back(handle_value(BasicJsonType::value_t::array));
+
+        if (m_lexer)
+        {
+            ref_stack.back()->start_position = m_lexer->get_position() - 1;
+        }
 
         if (JSON_HEDLEY_UNLIKELY(len != static_cast<std::size_t>(-1) && len > ref_stack.back()->max_size()))
         {
@@ -290,6 +291,12 @@ class json_sax_dom_parser
     {
         JSON_ASSERT(!ref_stack.empty());
         JSON_ASSERT(ref_stack.back()->is_array());
+
+        if (m_lexer)
+        {
+            // set end position of the object (inclusive)
+            ref_stack.back()->end_position = m_lexer->get_position();
+        }
 
         ref_stack.back()->set_parents();
         ref_stack.pop_back();
@@ -483,7 +490,7 @@ class json_sax_dom_callback_parser
             {
                 if (m_lexer)
                 {
-                    ref_stack.back()->end_position = m_lexer->get_position() - 1;
+                    ref_stack.back()->end_position = m_lexer->get_position();
                 }
                 ref_stack.back()->set_parents();
             }
@@ -518,6 +525,11 @@ class json_sax_dom_callback_parser
         auto val = handle_value(BasicJsonType::value_t::array, true);
         ref_stack.push_back(val.second);
 
+        if (m_lexer && ref_stack.back())
+        {
+            ref_stack.back()->start_position = m_lexer->get_position() - 1;
+        }
+
         // check array limit
         if (ref_stack.back() && JSON_HEDLEY_UNLIKELY(len != static_cast<std::size_t>(-1) && len > ref_stack.back()->max_size()))
         {
@@ -536,6 +548,10 @@ class json_sax_dom_callback_parser
             keep = callback(static_cast<int>(ref_stack.size()) - 1, parse_event_t::array_end, *ref_stack.back());
             if (keep)
             {
+                if (m_lexer)
+                {
+                    ref_stack.back()->end_position = m_lexer->get_position();
+                }
                 ref_stack.back()->set_parents();
             }
             else
