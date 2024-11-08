@@ -331,12 +331,6 @@ void start_pos_end_pos_helper(std::string& nested_type_json_str, const std::stri
         // 5. Check if the start and end positions are generated correctly for nested objects and arrays
         CHECK(nested_type_json_str == root_type_json_str.substr(nested.get_start_position(), nested.get_end_position() - nested.get_start_position()));
     }
-    else
-    {
-        // 6. Check if the start and end positions are not generated for nested primitive types
-        CHECK(nested.get_start_position() == std::string::npos);
-        CHECK(nested.get_end_position() == std::string::npos);
-    }
 }
 
 } // namespace
@@ -1785,29 +1779,29 @@ TEST_CASE("parser class")
                     std::string json_str =  R"("test")";
                     json j = json::parse(json_str, cb);
                     CHECK(j == json("test"));
-                    CHECK(j.get_start_position() == std::string::npos);
-                    CHECK(j.get_end_position() == std::string::npos);
+                    CHECK(j.get_start_position() == 0);
+                    CHECK(j.get_end_position() == json_str.size());
 
                     // 2. number type
                     json_str =  R"(1)";
                     j = json::parse(json_str, cb);
                     CHECK(j == json(1));
-                    CHECK(j.get_start_position() == std::string::npos);
-                    CHECK(j.get_end_position() == std::string::npos);
+                    CHECK(j.get_start_position() == 0);
+                    CHECK(j.get_end_position() == json_str.size());
 
                     // 3. boolean type
                     json_str =  R"(true)";
                     j = json::parse(json_str, cb);
                     CHECK(j == json(true));
-                    CHECK(j.get_start_position() == std::string::npos);
-                    CHECK(j.get_end_position() == std::string::npos);
+                    CHECK(j.get_start_position() == 0);
+                    CHECK(j.get_end_position() == json_str.size());
 
                     // 4. null type
                     json_str =  R"(null)";
                     j = json::parse(json_str, cb);
                     CHECK(j == json(nullptr));
-                    CHECK(j.get_start_position() == std::string::npos);
-                    CHECK(j.get_end_position() == std::string::npos);
+                    CHECK(j.get_start_position() == 0);
+                    CHECK(j.get_end_position() == json_str.size());
                 }
 
                 SECTION("without callback")
@@ -1816,29 +1810,29 @@ TEST_CASE("parser class")
                     std::string json_str =  R"("test")";
                     json j = json::parse(json_str);
                     CHECK(j == json("test"));
-                    CHECK(j.get_start_position() == std::string::npos);
-                    CHECK(j.get_end_position() == std::string::npos);
+                    CHECK(j.get_start_position() == 0);
+                    CHECK(j.get_end_position() == json_str.size());
 
                     // 2. number type
                     json_str =  R"(1)";
                     j = json::parse(json_str);
                     CHECK(j == json(1));
-                    CHECK(j.get_start_position() == std::string::npos);
-                    CHECK(j.get_end_position() == std::string::npos);
+                    CHECK(j.get_start_position() == 0);
+                    CHECK(j.get_end_position() == json_str.size());
 
                     // 3. boolean type
                     json_str =  R"(true)";
                     j = json::parse(json_str);
                     CHECK(j == json(true));
-                    CHECK(j.get_start_position() == std::string::npos);
-                    CHECK(j.get_end_position() == std::string::npos);
+                    CHECK(j.get_start_position() == 0);
+                    CHECK(j.get_end_position() == json_str.size());
 
                     // 4. null type
                     json_str =  R"(null)";
                     j = json::parse(json_str);
                     CHECK(j == json(nullptr));
-                    CHECK(j.get_start_position() == std::string::npos);
-                    CHECK(j.get_end_position() == std::string::npos);
+                    CHECK(j.get_start_position() == 0);
+                    CHECK(j.get_end_position() == json_str.size());
                 }
             }
 
@@ -1852,14 +1846,14 @@ TEST_CASE("parser class")
                     };
                     std::string nested_type_json_str =  R"("test")";
                     std::string root_type_json_str =  R"({   "nested": )" + nested_type_json_str + R"(, "anotherValue": "test" })";
-                    start_pos_end_pos_helper(nested_type_json_str, root_type_json_str, json({{"nested", "test"}, {"anotherValue", "test"}}), false, cb);
+                    start_pos_end_pos_helper(nested_type_json_str, root_type_json_str, json({{"nested", "test"}, {"anotherValue", "test"}}), true, cb);
                 }
 
                 SECTION("without callback")
                 {
                     std::string nested_type_json_str =  R"("test")";
                     std::string root_type_json_str =  R"({   "nested": )" + nested_type_json_str + R"(, "anotherValue": "test" })";
-                    start_pos_end_pos_helper(nested_type_json_str, root_type_json_str, json({{"nested", "test"}, {"anotherValue", "test"}}), false);
+                    start_pos_end_pos_helper(nested_type_json_str, root_type_json_str, json({{"nested", "test"}, {"anotherValue", "test"}}), true);
                 }
             }
 
@@ -1873,14 +1867,14 @@ TEST_CASE("parser class")
                     };
                     std::string nested_type_json_str =  R"(1)";
                     std::string root_type_json_str =  R"({   "nested": )" + nested_type_json_str + R"(, "anotherValue": "test" })";
-                    start_pos_end_pos_helper(nested_type_json_str, root_type_json_str, json({{"nested", 1}, {"anotherValue", "test"}}), false, cb);
+                    start_pos_end_pos_helper(nested_type_json_str, root_type_json_str, json({{"nested", 1}, {"anotherValue", "test"}}), true, cb);
                 }
 
                 SECTION("without callback")
                 {
                     std::string nested_type_json_str =  R"(1)";
                     std::string root_type_json_str =  R"({   "nested": )" + nested_type_json_str + R"(, "anotherValue": "test" })";
-                    start_pos_end_pos_helper(nested_type_json_str, root_type_json_str, json({{"nested", 1}, {"anotherValue", "test"}}), false);
+                    start_pos_end_pos_helper(nested_type_json_str, root_type_json_str, json({{"nested", 1}, {"anotherValue", "test"}}), true);
                 }
             }
 
@@ -1894,14 +1888,14 @@ TEST_CASE("parser class")
                     };
                     std::string nested_type_json_str =  R"(true)";
                     std::string root_type_json_str =  R"({   "nested": )" + nested_type_json_str + R"(, "anotherValue": "test" })";
-                    start_pos_end_pos_helper(nested_type_json_str, root_type_json_str, json({{"nested", true}, {"anotherValue", "test"}}), false, cb);
+                    start_pos_end_pos_helper(nested_type_json_str, root_type_json_str, json({{"nested", true}, {"anotherValue", "test"}}), true, cb);
                 }
 
                 SECTION("without callback")
                 {
                     std::string nested_type_json_str =  R"(true)";
                     std::string root_type_json_str =  R"({   "nested": )" + nested_type_json_str + R"(, "anotherValue": "test" })";
-                    start_pos_end_pos_helper(nested_type_json_str, root_type_json_str, json({{"nested", true}, {"anotherValue", "test"}}), false);
+                    start_pos_end_pos_helper(nested_type_json_str, root_type_json_str, json({{"nested", true}, {"anotherValue", "test"}}), true);
                 }
             }
 
@@ -1915,14 +1909,14 @@ TEST_CASE("parser class")
                     };
                     std::string nested_type_json_str =  R"(null)";
                     std::string root_type_json_str =  R"({   "nested": )" + nested_type_json_str + R"(, "anotherValue": "test" })";
-                    start_pos_end_pos_helper(nested_type_json_str, root_type_json_str, json({{"nested", nullptr}, {"anotherValue", "test"}}), false, cb);
+                    start_pos_end_pos_helper(nested_type_json_str, root_type_json_str, json({{"nested", nullptr}, {"anotherValue", "test"}}), true, cb);
                 }
 
                 SECTION("without callback")
                 {
                     std::string nested_type_json_str =  R"(null)";
                     std::string root_type_json_str =  R"({   "nested": )" + nested_type_json_str + R"(, "anotherValue": "test" })";
-                    start_pos_end_pos_helper(nested_type_json_str, root_type_json_str, json({{"nested", nullptr}, {"anotherValue", "test"}}), false);
+                    start_pos_end_pos_helper(nested_type_json_str, root_type_json_str, json({{"nested", nullptr}, {"anotherValue", "test"}}), true);
                 }
             }
         }
