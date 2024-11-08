@@ -8450,7 +8450,7 @@ class json_sax_dom_parser
                        parsing
     @param[in] allow_exceptions_  whether parse errors yield exceptions
     */
-    explicit json_sax_dom_parser(BasicJsonType& r, const bool allow_exceptions_ = true, const lexer_t* lexer_ = nullptr)
+    explicit json_sax_dom_parser(BasicJsonType& r, const bool allow_exceptions_ = true, lexer_t* lexer_ = nullptr)
         : root(r), allow_exceptions(allow_exceptions_), m_lexer(lexer_)
     {}
 
@@ -8599,6 +8599,39 @@ class json_sax_dom_parser
     }
 
   private:
+
+    void set_start_end_pos(BasicJsonType& v)
+    {
+        if (m_lexer)
+        {
+            v.end_position = m_lexer->get_position();
+
+            switch (v.type())
+            {
+                case value_t::boolean:
+                {
+                    v.start_position = v.end_position - (v.m_data.m_value.boolean ? 4 : 5);
+                    break;
+                }
+
+                case value_t::null:
+                {
+                    v.start_position = v.end_position - 4;
+                    break;
+                }
+
+                case value_t::string:
+                {
+                    v.start_position = v.end_position - v.m_data.m_value.string->size() - 2;
+                    break;
+                }
+
+                default:
+                    v.start_position = v.end_position - m_lexer->get_string().size();
+                    break;
+            }
+        }
+    }
     /*!
     @invariant If the ref stack is empty, then the passed value will be the new
                root.
@@ -8612,6 +8645,7 @@ class json_sax_dom_parser
         if (ref_stack.empty())
         {
             root = BasicJsonType(std::forward<Value>(v));
+            set_start_end_pos(root);
             return &root;
         }
 
@@ -8620,12 +8654,14 @@ class json_sax_dom_parser
         if (ref_stack.back()->is_array())
         {
             ref_stack.back()->m_data.m_value.array->emplace_back(std::forward<Value>(v));
+            set_start_end_pos(ref_stack.back()->m_data.m_value.array->back());
             return &(ref_stack.back()->m_data.m_value.array->back());
         }
 
         JSON_ASSERT(ref_stack.back()->is_object());
         JSON_ASSERT(object_element);
         *object_element = BasicJsonType(std::forward<Value>(v));
+        set_start_end_pos(*object_element);
         return object_element;
     }
 
@@ -8640,7 +8676,7 @@ class json_sax_dom_parser
     /// whether to throw exceptions in case of errors
     const bool allow_exceptions = true;
     /// the lexer to obtain the current position
-    const lexer_t* m_lexer = nullptr;
+    lexer_t* m_lexer = nullptr;
 };
 
 template<typename BasicJsonType, typename InputAdapterType>
@@ -8659,7 +8695,7 @@ class json_sax_dom_callback_parser
     json_sax_dom_callback_parser(BasicJsonType& r,
                                  const parser_callback_t cb,
                                  const bool allow_exceptions_ = true,
-                                 const lexer_t* lexer_ = nullptr)
+                                 lexer_t* lexer_ = nullptr)
         : root(r), callback(cb), allow_exceptions(allow_exceptions_), m_lexer(lexer_)
     {
         keep_stack.push_back(true);
@@ -8871,6 +8907,40 @@ class json_sax_dom_callback_parser
     }
 
   private:
+
+    template<typename Value>
+    void set_start_end_pos(Value& v)
+    {
+        if (m_lexer)
+        {
+            v.end_position = m_lexer->get_position();
+
+            switch (v.type())
+            {
+                case value_t::boolean:
+                {
+                    v.start_position = v.end_position - (v.m_data.m_value.boolean ? 4 : 5);
+                    break;
+                }
+
+                case value_t::null:
+                {
+                    v.start_position = v.end_position - 4;
+                    break;
+                }
+
+                case value_t::string:
+                {
+                    v.start_position = v.end_position - v.m_data.m_value.string->size() - 2;
+                    break;
+                }
+
+                default:
+                    v.start_position = v.end_position - m_lexer->get_string().size();
+                    break;
+            }
+        }
+    }
     /*!
     @param[in] v  value to add to the JSON value we build during parsing
     @param[in] skip_callback  whether we should skip calling the callback
@@ -8900,6 +8970,7 @@ class json_sax_dom_callback_parser
 
         // create value
         auto value = BasicJsonType(std::forward<Value>(v));
+        set_start_end_pos(value);
 
         // check callback
         const bool keep = skip_callback || callback(static_cast<int>(ref_stack.size()), parse_event_t::value, value);
@@ -8969,7 +9040,7 @@ class json_sax_dom_callback_parser
     /// a discarded value for the callback
     BasicJsonType discarded = BasicJsonType::value_t::discarded;
     /// the lexer to obtain the current position
-    const lexer_t* m_lexer = nullptr;
+    lexer_t* m_lexer = nullptr;
 };
 
 template<typename BasicJsonType>

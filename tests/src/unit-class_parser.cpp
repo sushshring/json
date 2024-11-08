@@ -303,7 +303,14 @@ void comments_helper(const std::string& s)
     }
 }
 
-void start_pos_end_pos_helper(std::string& nested_type_json_str, const std::string& root_type_json_str, const json& expected_json, bool should_generate_start_end_pos, json::parser_callback_t cb = nullptr)
+void validateFn(const std::string& original_string, const json& j, const json& check)
+{
+    CHECK(j == check);
+    CHECK(j.get_start_position() == 0);
+    CHECK(j.get_end_position() == original_string.size());
+}
+
+void start_pos_end_pos_helper(std::string& nested_type_json_str, const std::string& root_type_json_str, const json& expected_json, json::parser_callback_t cb = nullptr)
 {
     json j;
 
@@ -318,19 +325,12 @@ void start_pos_end_pos_helper(std::string& nested_type_json_str, const std::stri
     }
 
     // 2. Check if the generated JSON is as expected
-    CHECK(j == expected_json);
+    validateFn(root_type_json_str, j, expected_json);
 
-    // 3. Check if the start and end positions are generated correctly for root object
-    CHECK(j.get_start_position() == 0);
-    CHECK(j.get_end_position() == root_type_json_str.size());
-
-    // 4. Get the nested object
+    // 3. Get the nested object
     const auto& nested = j["nested"];
-    if (should_generate_start_end_pos)
-    {
-        // 5. Check if the start and end positions are generated correctly for nested objects and arrays
-        CHECK(nested_type_json_str == root_type_json_str.substr(nested.get_start_position(), nested.get_end_position() - nested.get_start_position()));
-    }
+    // 4. Check if the start and end positions are generated correctly for nested objects and arrays
+    CHECK(nested_type_json_str == root_type_json_str.substr(nested.get_start_position(), nested.get_end_position() - nested.get_start_position()));
 }
 
 } // namespace
@@ -1720,48 +1720,83 @@ TEST_CASE("parser class")
         CHECK_THROWS_WITH_AS(_ = json::parse("/*", nullptr, true, true), "[json.exception.parse_error.101] parse error at line 1, column 3: syntax error while parsing value - invalid comment; missing closing '*/'; last read: '/*<U+0000>'", json::parse_error);
     }
 
+// Macro for all test cases for start_pos and end_pos
+#define SETUP_TESTCASES() \
+    SECTION("with callback") \
+    { \
+        SECTION("filter nothing") \
+        { \
+            json::parser_callback_t const cb = [](int /*unused*/, json::parse_event_t /*unused*/, json& /*unused*/) noexcept \
+            { \
+                return true; \
+            }; \
+            start_pos_end_pos_helper(nested_type_json_str, root_type_json_str, expected, cb); \
+        } \
+        SECTION("filter element") \
+        { \
+            json::parser_callback_t const cb = [](int /*unused*/, json::parse_event_t event, json& j) noexcept \
+            { \
+                return (event != json::parse_event_t::key && event != json::parse_event_t::value) || j != json("a"); \
+            }; \
+            start_pos_end_pos_helper(nested_type_json_str, root_type_json_str, filteredExpected, cb); \
+        } \
+    } \
+    SECTION("without callback") \
+    { \
+        start_pos_end_pos_helper(nested_type_json_str, root_type_json_str, expected); \
+    }
+
     SECTION("retrieve start position and end position")
     {
         SECTION("for object")
         {
-            SECTION("with callback")
-            {
-                json::parser_callback_t const cb = [](int /*unused*/, json::parse_event_t /*unused*/, json& /*unused*/) noexcept
-                {
-                    return true;
-                };
-                std::string nested_type_json_str =  R"({    "a":       1,"b"      : "test"})";
-                std::string root_type_json_str =  R"({    "nested": )" + nested_type_json_str + R"(, "anotherValue": "test"})";
-                start_pos_end_pos_helper(nested_type_json_str, root_type_json_str, json({{"nested", {{"a", 1}, {"b", "test"}}}, {"anotherValue", "test"}}), true, cb);
-            }
+            std::string nested_type_json_str =  R"({    "a":       1,"b"      : "test1"})";
+            std::string root_type_json_str =  R"({    "nested": )" + nested_type_json_str + R"(, "anotherValue": "test2"})";
+            auto expected = json({{"nested", {{"a", 1}, {"b", "test1"}}}, {"anotherValue", "test2"}});
+            auto filteredExpected = expected;
+            filteredExpected["nested"].erase("a");
 
-            SECTION("without callback")
-            {
-                std::string nested_type_json_str =  R"({    "a":       1,"b"      : "test"})";
-                std::string root_type_json_str =  R"({    "nested": )" + nested_type_json_str + R"(, "anotherValue": "test"})";
-                start_pos_end_pos_helper(nested_type_json_str, root_type_json_str, json({{"nested", {{"a", 1}, {"b", "test"}}}, {"anotherValue", "test"}}), true);
-            }
+            SETUP_TESTCASES()
         }
 
         SECTION("for array")
         {
-            SECTION("with callback")
-            {
-                json::parser_callback_t const cb = [](int /*unused*/, json::parse_event_t /*unused*/, json& /*unused*/) noexcept
-                {
-                    return true;
-                };
-                std::string nested_type_json_str =  R"([1, "test"])";
-                std::string root_type_json_str =  R"({   "nested": )" + nested_type_json_str + R"(, "anotherValue": "test" })";
-                start_pos_end_pos_helper(nested_type_json_str, root_type_json_str, json({{"nested", {1, "test"}}, {"anotherValue", "test"}}), true, cb);
-            }
+            std::string nested_type_json_str =  R"(["a", "test", 45])";
+            std::string root_type_json_str =  R"({   "nested": )" + nested_type_json_str + R"(, "anotherValue": "test" })";
+            auto expected = json({{"nested", {"a", "test", 45}}, {"anotherValue", "test"}});
+            auto filteredExpected = expected;
+            filteredExpected["nested"] = json({"test", 45});
+            SETUP_TESTCASES()
+        }
 
-            SECTION("without callback")
-            {
-                std::string nested_type_json_str =  R"([1, "test"])";
-                std::string root_type_json_str =  R"({   "nested": )" + nested_type_json_str + R"(, "anotherValue": "test" })";
-                start_pos_end_pos_helper(nested_type_json_str, root_type_json_str, json({{"nested", {1, "test"}}, {"anotherValue", "test"}}), true);
-            }
+        SECTION("for array with objects")
+        {
+            std::string nested_type_json_str =  R"([{"a": 1, "b": "test"}, {"c": 2, "d": "test2"}])";
+            std::string root_type_json_str =  R"({   "nested": )" + nested_type_json_str + R"(, "anotherValue": "test" })";
+            auto expected = json({{"nested", {{{"a", 1}, {"b", "test"}}, {{"c", 2}, {"d", "test2"}}}}, {"anotherValue", "test"}});
+            auto filteredExpected = expected;
+            filteredExpected["nested"][0].erase("a");
+            SETUP_TESTCASES()
+
+            auto j = json::parse(root_type_json_str);
+            auto nested_array = j["nested"];
+            auto nested_obj = nested_array[0];
+            CHECK(nested_type_json_str.substr(1, 21) == root_type_json_str.substr(nested_obj.get_start_position(), nested_obj.get_end_position() - nested_obj.get_start_position()));
+            CHECK(nested_type_json_str.substr(24, 22) == root_type_json_str.substr(nested_array[1].get_start_position(), nested_array[1].get_end_position() - nested_array[1].get_start_position()));
+        }
+
+        SECTION("for two levels of nesting objects")
+        {
+            std::string nested_type_json_str =  R"({"nested2": {"b": "test"}})";
+            std::string root_type_json_str =  R"({   "a": 2, "nested": )" + nested_type_json_str + R"(, "anotherValue": "test" })";
+            auto expected = json({{"a", 2}, {"nested", {{"nested2", {{"b", "test"}}}}}, {"anotherValue", "test"}});
+            auto filteredExpected = expected;
+            filteredExpected.erase("a");
+            SETUP_TESTCASES()
+
+            auto j = json::parse(root_type_json_str);
+            auto nested_obj = j["nested"]["nested2"];
+            CHECK(nested_type_json_str.substr(12, 13) == root_type_json_str.substr(nested_obj.get_start_position(), nested_obj.get_end_position() - nested_obj.get_start_position()));
         }
 
         SECTION("for simple types")
@@ -1778,30 +1813,22 @@ TEST_CASE("parser class")
                     // 1. string type
                     std::string json_str =  R"("test")";
                     json j = json::parse(json_str, cb);
-                    CHECK(j == json("test"));
-                    CHECK(j.get_start_position() == 0);
-                    CHECK(j.get_end_position() == json_str.size());
+                    validateFn(json_str, j, "test");
 
                     // 2. number type
                     json_str =  R"(1)";
                     j = json::parse(json_str, cb);
-                    CHECK(j == json(1));
-                    CHECK(j.get_start_position() == 0);
-                    CHECK(j.get_end_position() == json_str.size());
+                    validateFn(json_str, j, 1);
 
                     // 3. boolean type
                     json_str =  R"(true)";
                     j = json::parse(json_str, cb);
-                    CHECK(j == json(true));
-                    CHECK(j.get_start_position() == 0);
-                    CHECK(j.get_end_position() == json_str.size());
+                    validateFn(json_str, j, true);
 
                     // 4. null type
                     json_str =  R"(null)";
                     j = json::parse(json_str, cb);
-                    CHECK(j == json(nullptr));
-                    CHECK(j.get_start_position() == 0);
-                    CHECK(j.get_end_position() == json_str.size());
+                    validateFn(json_str, j, nullptr);
                 }
 
                 SECTION("without callback")
@@ -1809,115 +1836,75 @@ TEST_CASE("parser class")
                     // 1. string type
                     std::string json_str =  R"("test")";
                     json j = json::parse(json_str);
-                    CHECK(j == json("test"));
-                    CHECK(j.get_start_position() == 0);
-                    CHECK(j.get_end_position() == json_str.size());
+                    validateFn(json_str, j, "test");
 
                     // 2. number type
                     json_str =  R"(1)";
                     j = json::parse(json_str);
-                    CHECK(j == json(1));
-                    CHECK(j.get_start_position() == 0);
-                    CHECK(j.get_end_position() == json_str.size());
+                    validateFn(json_str, j, 1);
+
+                    json_str = R"(1.001239923)";
+                    j = json::parse(json_str);
+                    validateFn(json_str, j, 1.001239923);
+
+                    json_str = R"(1.123812389000000)";
+                    j = json::parse(json_str);
+                    validateFn(json_str, j, 1.123812389);
 
                     // 3. boolean type
                     json_str =  R"(true)";
                     j = json::parse(json_str);
-                    CHECK(j == json(true));
-                    CHECK(j.get_start_position() == 0);
-                    CHECK(j.get_end_position() == json_str.size());
+                    validateFn(json_str, j, true);
+
+                    json_str =  R"(false)";
+                    j = json::parse(json_str);
+                    validateFn(json_str, j, false);
 
                     // 4. null type
                     json_str =  R"(null)";
                     j = json::parse(json_str);
-                    CHECK(j == json(nullptr));
-                    CHECK(j.get_start_position() == 0);
-                    CHECK(j.get_end_position() == json_str.size());
+                    validateFn(json_str, j, nullptr);
                 }
             }
 
             SECTION("string type")
             {
-                SECTION("with callback")
-                {
-                    json::parser_callback_t const cb = [](int /*unused*/, json::parse_event_t /*unused*/, json& /*unused*/) noexcept
-                    {
-                        return true;
-                    };
-                    std::string nested_type_json_str =  R"("test")";
-                    std::string root_type_json_str =  R"({   "nested": )" + nested_type_json_str + R"(, "anotherValue": "test" })";
-                    start_pos_end_pos_helper(nested_type_json_str, root_type_json_str, json({{"nested", "test"}, {"anotherValue", "test"}}), true, cb);
-                }
-
-                SECTION("without callback")
-                {
-                    std::string nested_type_json_str =  R"("test")";
-                    std::string root_type_json_str =  R"({   "nested": )" + nested_type_json_str + R"(, "anotherValue": "test" })";
-                    start_pos_end_pos_helper(nested_type_json_str, root_type_json_str, json({{"nested", "test"}, {"anotherValue", "test"}}), true);
-                }
+                std::string nested_type_json_str =  R"("test")";
+                std::string root_type_json_str =  R"({ "a": 1,   "nested": )" + nested_type_json_str + R"(, "anotherValue": "test" })";
+                auto expected = json({{"nested", "test"}, {"anotherValue", "test"}, {"a", 1}});
+                auto filteredExpected = expected;
+                filteredExpected.erase("a");
+                SETUP_TESTCASES()
             }
 
             SECTION("number type")
             {
-                SECTION("with callback")
-                {
-                    json::parser_callback_t const cb = [](int /*unused*/, json::parse_event_t /*unused*/, json& /*unused*/) noexcept
-                    {
-                        return true;
-                    };
-                    std::string nested_type_json_str =  R"(1)";
-                    std::string root_type_json_str =  R"({   "nested": )" + nested_type_json_str + R"(, "anotherValue": "test" })";
-                    start_pos_end_pos_helper(nested_type_json_str, root_type_json_str, json({{"nested", 1}, {"anotherValue", "test"}}), true, cb);
-                }
-
-                SECTION("without callback")
-                {
-                    std::string nested_type_json_str =  R"(1)";
-                    std::string root_type_json_str =  R"({   "nested": )" + nested_type_json_str + R"(, "anotherValue": "test" })";
-                    start_pos_end_pos_helper(nested_type_json_str, root_type_json_str, json({{"nested", 1}, {"anotherValue", "test"}}), true);
-                }
+                std::string nested_type_json_str =  R"(2)";
+                std::string root_type_json_str =  R"({ "a": 1,   "nested": )" + nested_type_json_str + R"(, "anotherValue": "test" })";
+                auto expected = json({{"nested", 2}, {"anotherValue", "test"}, {"a", 1}});
+                auto filteredExpected = expected;
+                filteredExpected.erase("a");
+                SETUP_TESTCASES()
             }
 
             SECTION("boolean type")
             {
-                SECTION("with callback")
-                {
-                    json::parser_callback_t const cb = [](int /*unused*/, json::parse_event_t /*unused*/, json& /*unused*/) noexcept
-                    {
-                        return true;
-                    };
-                    std::string nested_type_json_str =  R"(true)";
-                    std::string root_type_json_str =  R"({   "nested": )" + nested_type_json_str + R"(, "anotherValue": "test" })";
-                    start_pos_end_pos_helper(nested_type_json_str, root_type_json_str, json({{"nested", true}, {"anotherValue", "test"}}), true, cb);
-                }
-
-                SECTION("without callback")
-                {
-                    std::string nested_type_json_str =  R"(true)";
-                    std::string root_type_json_str =  R"({   "nested": )" + nested_type_json_str + R"(, "anotherValue": "test" })";
-                    start_pos_end_pos_helper(nested_type_json_str, root_type_json_str, json({{"nested", true}, {"anotherValue", "test"}}), true);
-                }
+                std::string nested_type_json_str =  R"(true)";
+                std::string root_type_json_str =  R"({ "a": 1,   "nested": )" + nested_type_json_str + R"(, "anotherValue": "test" })";
+                auto expected = json({{"nested", true}, {"anotherValue", "test"}, {"a", 1}});
+                auto filteredExpected = expected;
+                filteredExpected.erase("a");
+                SETUP_TESTCASES()
             }
 
             SECTION("null type")
             {
-                SECTION("with callback")
-                {
-                    json::parser_callback_t const cb = [](int /*unused*/, json::parse_event_t /*unused*/, json& /*unused*/) noexcept
-                    {
-                        return true;
-                    };
-                    std::string nested_type_json_str =  R"(null)";
-                    std::string root_type_json_str =  R"({   "nested": )" + nested_type_json_str + R"(, "anotherValue": "test" })";
-                    start_pos_end_pos_helper(nested_type_json_str, root_type_json_str, json({{"nested", nullptr}, {"anotherValue", "test"}}), true, cb);
-                }
-
-                SECTION("without callback")
-                {
-                    std::string nested_type_json_str =  R"(null)";
-                    std::string root_type_json_str =  R"({   "nested": )" + nested_type_json_str + R"(, "anotherValue": "test" })";
-                    start_pos_end_pos_helper(nested_type_json_str, root_type_json_str, json({{"nested", nullptr}, {"anotherValue", "test"}}), true);
-                }
+                std::string nested_type_json_str =  R"(null)";
+                std::string root_type_json_str =  R"({ "a": 1,   "nested": )" + nested_type_json_str + R"(, "anotherValue": "test" })";
+                auto expected = json({{"nested", nullptr}, {"anotherValue", "test"}, {"a", 1}});
+                auto filteredExpected = expected;
+                filteredExpected.erase("a");
+                SETUP_TESTCASES()
             }
         }
     }
