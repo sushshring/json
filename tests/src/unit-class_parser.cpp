@@ -1720,7 +1720,7 @@ TEST_CASE("parser class")
         CHECK_THROWS_WITH_AS(_ = json::parse("/*", nullptr, true, true), "[json.exception.parse_error.101] parse error at line 1, column 3: syntax error while parsing value - invalid comment; missing closing '*/'; last read: '/*<U+0000>'", json::parse_error);
     }
 
-// Macro for all test cases for start_pos and end_pos
+    // Macro for all test cases for start_pos and end_pos
 #define SETUP_TESTCASES() \
     SECTION("with callback") \
     { \

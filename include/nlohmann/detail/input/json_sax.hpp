@@ -349,9 +349,24 @@ class json_sax_dom_parser
                     break;
                 }
 
+                case value_t::discarded:
+                {
+                    v.end_position = std::string::npos;
+                    v.start_position = v.end_position;
+                    break;
+                }
+                case value_t::binary:
+                case value_t::object:
+                case value_t::array:
+                case value_t::number_integer:
+                case value_t::number_unsigned:
+                case value_t::number_float:
+                case value_t::binary:
                 default:
+                {
                     v.start_position = v.end_position - m_lexer->get_string().size();
                     break;
+                }
             }
         }
     }
@@ -658,9 +673,24 @@ class json_sax_dom_callback_parser
                     break;
                 }
 
+                case value_t::discarded:
+                {
+                    v.end_position = std::string::npos;
+                    v.start_position = v.end_position;
+                    break;
+                }
+                case value_t::binary:
+                case value_t::object:
+                case value_t::array:
+                case value_t::number_integer:
+                case value_t::number_unsigned:
+                case value_t::number_float:
+                case value_t::binary:
                 default:
+                {
                     v.start_position = v.end_position - m_lexer->get_string().size();
                     break;
+                }
             }
         }
     }
