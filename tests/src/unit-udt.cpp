@@ -159,13 +159,13 @@ static bool operator==(const person& lhs, const person& rhs)
 static bool operator==(const contact& lhs, const contact& rhs)
 {
     return std::tie(lhs.m_person, lhs.m_address) ==
-               std::tie(rhs.m_person, rhs.m_address);
+           std::tie(rhs.m_person, rhs.m_address);
 }
 
 static bool operator==(const contact_book& lhs, const contact_book& rhs)
 {
     return std::tie(lhs.m_book_name, lhs.m_book_id, lhs.m_contacts) ==
-               std::tie(rhs.m_book_name, rhs.m_book_id, rhs.m_contacts);
+           std::tie(rhs.m_book_name, rhs.m_book_id, rhs.m_contacts);
 }
 } // namespace udt
 
@@ -252,15 +252,15 @@ TEST_CASE("basic usage" * doctest::test_suite("udt"))
         CHECK(json(sfinae_addict) == R"({"name":"theo", "age":23, "country":"France"})"_json);
         CHECK(json("Paris") == json(addr));
         CHECK(json(cpp_programmer) ==
-                  R"({"person" : {"age":23, "name":"theo", "country":"France"}, "address":"Paris"})"_json);
+              R"({"person" : {"age":23, "name":"theo", "country":"France"}, "address":"Paris"})"_json);
         CHECK(json(large_id) == json(static_cast<std::uint64_t>(1) << 63));
         CHECK(json(large_id) > 0u);
         CHECK(to_string(json(large_id)) == "9223372036854775808");
         CHECK(json(large_id).is_number_unsigned());
 
         CHECK(
-        json(book) ==
-                R"({"name":"C++", "id":42, "contacts" : [{"person" : {"age":23, "name":"theo", "country":"France"}, "address":"Paris"}, {"person" : {"age":42, "country":"中华人民共和国", "name":"王芳"}, "address":"Paris"}]})"_json);
+            json(book) ==
+            R"({"name":"C++", "id":42, "contacts" : [{"person" : {"age":23, "name":"theo", "country":"France"}, "address":"Paris"}, {"person" : {"age":42, "country":"中华人民共和国", "name":"王芳"}, "address":"Paris"}]})"_json);
 
     }
 
@@ -382,12 +382,12 @@ struct adl_serializer<std::shared_ptr<T >>
 template <>
 struct adl_serializer<udt::legacy_type>
 {
-    static void to_json(json & j, const udt::legacy_type & l)
+    static void to_json(json& j, const udt::legacy_type& l)
     {
         j = std::stoi(l.number);
     }
 
-    static void from_json(const json & j, udt::legacy_type & l)
+    static void from_json(const json& j, udt::legacy_type& l)
     {
         l.number = std::to_string(j.get<int>());
     }
@@ -636,7 +636,7 @@ static void from_json(const BasicJsonType& j, non_pod& np)
 static bool operator==(small_pod lhs, small_pod rhs) noexcept
 {
     return std::tie(lhs.begin, lhs.middle, lhs.end) ==
-               std::tie(rhs.begin, rhs.middle, rhs.end);
+           std::tie(rhs.begin, rhs.middle, rhs.end);
 }
 
 static bool operator==(const  non_pod& lhs, const  non_pod& rhs) noexcept

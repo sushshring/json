@@ -189,10 +189,10 @@ class visitor_adaptor
 {
   public:
     template <class Fnc>
-    void visit(const Fnc & fnc) const;
+    void visit(const Fnc& fnc) const;
   private:
     template <class Ptr, class Fnc>
-    void do_visit(const Ptr & ptr, const Fnc & fnc) const;
+    void do_visit(const Ptr& ptr, const Fnc& fnc) const;
 };
 
 using json_with_visitor_t = nlohmann::basic_json <

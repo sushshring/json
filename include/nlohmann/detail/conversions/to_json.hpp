@@ -423,7 +423,7 @@ inline void to_json(BasicJsonType& j, const std_fs::path& p)
 struct to_json_fn
 {
     template<typename BasicJsonType, typename T>
-    auto operator()(BasicJsonType & j, T&& val) const noexcept(noexcept(to_json(j, std::forward<T>(val))))
+    auto operator()(BasicJsonType& j, T&& val) const noexcept(noexcept(to_json(j, std::forward<T>(val))))
     -> decltype(to_json(j, std::forward<T>(val)), void())
     {
         return to_json(j, std::forward<T>(val));

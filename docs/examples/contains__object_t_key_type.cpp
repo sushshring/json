@@ -12,7 +12,7 @@ int main()
 
     // call contains
     std::cout << std::boolalpha <<
-    "j_object contains 'key': " << j_object.contains("key") << '\n' <<
-    "j_object contains 'another': " << j_object.contains("another") << '\n' <<
-    "j_array contains 'key': " << j_array.contains("key") << std::endl;
+              "j_object contains 'key': " << j_object.contains("key") << '\n' <<
+              "j_object contains 'another': " << j_object.contains("another") << '\n' <<
+              "j_array contains 'key': " << j_array.contains("key") << std::endl;
 }

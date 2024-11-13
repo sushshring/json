@@ -572,7 +572,7 @@ inline void grisu2_round(char* buf, int len, std::uint64_t dist, std::uint64_t d
 
     while (rest < dist
             && delta - rest >= ten_k
-                               && (rest + ten_k < dist || dist - rest > rest + ten_k - dist))
+            && (rest + ten_k < dist || dist - rest > rest + ten_k - dist))
     {
         JSON_ASSERT(buf[len - 1] != '0');
         buf[len - 1]--;

@@ -385,7 +385,7 @@ TEST_CASE("JSON pointers")
 
             // assign to "-"
             CHECK_THROWS_WITH_AS(j["/-"_json_pointer],
-                                   "[json.exception.out_of_range.402] array index '-' (3) is out of range", json::out_of_range&);
+                                 "[json.exception.out_of_range.402] array index '-' (3) is out of range", json::out_of_range&);
             CHECK_THROWS_WITH_AS(j.at("/-"_json_pointer),
                                  "[json.exception.out_of_range.402] array index '-' (3) is out of range", json::out_of_range&);
             CHECK(!j.contains("/-"_json_pointer));

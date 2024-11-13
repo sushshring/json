@@ -399,14 +399,14 @@ struct container_input_adapter_factory {};
 template<typename ContainerType>
 struct container_input_adapter_factory< ContainerType,
        void_t<decltype(begin(std::declval<ContainerType>()), end(std::declval<ContainerType>())) >>
-{
-    using adapter_type = decltype(input_adapter(begin(std::declval<ContainerType>()), end(std::declval<ContainerType>())));
+       {
+           using adapter_type = decltype(input_adapter(begin(std::declval<ContainerType>()), end(std::declval<ContainerType>())));
 
-    static adapter_type create(const ContainerType & container)
-    {
-        return input_adapter(begin(container), end(container));
-    }
-};
+           static adapter_type create(const ContainerType& container)
+{
+    return input_adapter(begin(container), end(container));
+}
+       };
 
 }  // namespace container_input_adapter_factory_impl
 
