@@ -32,7 +32,7 @@ TEST_CASE("serialization")
             const json j = {"foo", 1, 2, 3, false, {{"one", 1}}};
             ss << std::setw(4) << j;
             CHECK(ss.str() ==
-                  "[\n    \"foo\",\n    1,\n    2,\n    3,\n    false,\n    {\n        \"one\": 1\n    }\n]");
+                      "[\n    \"foo\",\n    1,\n    2,\n    3,\n    false,\n    {\n        \"one\": 1\n    }\n]");
         }
 
         SECTION("given fill")
@@ -41,7 +41,7 @@ TEST_CASE("serialization")
             const json j = {"foo", 1, 2, 3, false, {{"one", 1}}};
             ss << std::setw(1) << std::setfill('\t') << j;
             CHECK(ss.str() ==
-                  "[\n\t\"foo\",\n\t1,\n\t2,\n\t3,\n\tfalse,\n\t{\n\t\t\"one\": 1\n\t}\n]");
+                      "[\n\t\"foo\",\n\t1,\n\t2,\n\t3,\n\tfalse,\n\t{\n\t\t\"one\": 1\n\t}\n]");
         }
     }
 
@@ -62,7 +62,7 @@ TEST_CASE("serialization")
             ss.width(4);
             j >> ss;
             CHECK(ss.str() ==
-                  "[\n    \"foo\",\n    1,\n    2,\n    3,\n    false,\n    {\n        \"one\": 1\n    }\n]");
+                      "[\n    \"foo\",\n    1,\n    2,\n    3,\n    false,\n    {\n        \"one\": 1\n    }\n]");
         }
 
         SECTION("given fill")
@@ -73,7 +73,7 @@ TEST_CASE("serialization")
             ss.fill('\t');
             j >> ss;
             CHECK(ss.str() ==
-                  "[\n\t\"foo\",\n\t1,\n\t2,\n\t3,\n\tfalse,\n\t{\n\t\t\"one\": 1\n\t}\n]");
+                      "[\n\t\"foo\",\n\t1,\n\t2,\n\t3,\n\tfalse,\n\t{\n\t\t\"one\": 1\n\t}\n]");
         }
     }
 
@@ -220,78 +220,78 @@ TEST_CASE("dump with binary values")
     SECTION("pretty-printed")
     {
         CHECK(binary.dump(4) == "{\n"
-              "    \"bytes\": [1, 2, 3, 4],\n"
-              "    \"subtype\": null\n"
-              "}");
+                                "    \"bytes\": [1, 2, 3, 4],\n"
+                                "    \"subtype\": null\n"
+                                "}");
         CHECK(binary_empty.dump(4) == "{\n"
-              "    \"bytes\": [],\n"
-              "    \"subtype\": null\n"
-              "}");
+                                      "    \"bytes\": [],\n"
+                                      "    \"subtype\": null\n"
+                                      "}");
         CHECK(binary_with_subtype.dump(4) == "{\n"
-              "    \"bytes\": [1, 2, 3, 4],\n"
-              "    \"subtype\": 128\n"
-              "}");
+                                             "    \"bytes\": [1, 2, 3, 4],\n"
+                                             "    \"subtype\": 128\n"
+                                             "}");
         CHECK(binary_empty_with_subtype.dump(4) == "{\n"
-              "    \"bytes\": [],\n"
-              "    \"subtype\": 128\n"
-              "}");
+                                                   "    \"bytes\": [],\n"
+                                                   "    \"subtype\": 128\n"
+                                                   "}");
 
         CHECK(object.dump(4) == "{\n"
-              "    \"key\": {\n"
-              "        \"bytes\": [1, 2, 3, 4],\n"
-              "        \"subtype\": null\n"
-              "    }\n"
-              "}");
+                                "    \"key\": {\n"
+                                "        \"bytes\": [1, 2, 3, 4],\n"
+                                "        \"subtype\": null\n"
+                                "    }\n"
+                                "}");
         CHECK(object_empty.dump(4) == "{\n"
-              "    \"key\": {\n"
-              "        \"bytes\": [],\n"
-              "        \"subtype\": null\n"
-              "    }\n"
-              "}");
+                                      "    \"key\": {\n"
+                                      "        \"bytes\": [],\n"
+                                      "        \"subtype\": null\n"
+                                      "    }\n"
+                                      "}");
         CHECK(object_with_subtype.dump(4) == "{\n"
-              "    \"key\": {\n"
-              "        \"bytes\": [1, 2, 3, 4],\n"
-              "        \"subtype\": 128\n"
-              "    }\n"
-              "}");
+                                             "    \"key\": {\n"
+                                             "        \"bytes\": [1, 2, 3, 4],\n"
+                                             "        \"subtype\": 128\n"
+                                             "    }\n"
+                                             "}");
         CHECK(object_empty_with_subtype.dump(4) == "{\n"
-              "    \"key\": {\n"
-              "        \"bytes\": [],\n"
-              "        \"subtype\": 128\n"
-              "    }\n"
-              "}");
+                                                   "    \"key\": {\n"
+                                                   "        \"bytes\": [],\n"
+                                                   "        \"subtype\": 128\n"
+                                                   "    }\n"
+                                                   "}");
 
         CHECK(array.dump(4) == "[\n"
-              "    \"value\",\n"
-              "    1,\n"
-              "    {\n"
-              "        \"bytes\": [1, 2, 3, 4],\n"
-              "        \"subtype\": null\n"
-              "    }\n"
-              "]");
+                               "    \"value\",\n"
+                               "    1,\n"
+                               "    {\n"
+                               "        \"bytes\": [1, 2, 3, 4],\n"
+                               "        \"subtype\": null\n"
+                               "    }\n"
+                               "]");
         CHECK(array_empty.dump(4) == "[\n"
-              "    \"value\",\n"
-              "    1,\n"
-              "    {\n"
-              "        \"bytes\": [],\n"
-              "        \"subtype\": null\n"
-              "    }\n"
-              "]");
+                                     "    \"value\",\n"
+                                     "    1,\n"
+                                     "    {\n"
+                                     "        \"bytes\": [],\n"
+                                     "        \"subtype\": null\n"
+                                     "    }\n"
+                                     "]");
         CHECK(array_with_subtype.dump(4) == "[\n"
-              "    \"value\",\n"
-              "    1,\n"
-              "    {\n"
-              "        \"bytes\": [1, 2, 3, 4],\n"
-              "        \"subtype\": 128\n"
-              "    }\n"
-              "]");
+                                            "    \"value\",\n"
+                                            "    1,\n"
+                                            "    {\n"
+                                            "        \"bytes\": [1, 2, 3, 4],\n"
+                                            "        \"subtype\": 128\n"
+                                            "    }\n"
+                                            "]");
         CHECK(array_empty_with_subtype.dump(4) == "[\n"
-              "    \"value\",\n"
-              "    1,\n"
-              "    {\n"
-              "        \"bytes\": [],\n"
-              "        \"subtype\": 128\n"
-              "    }\n"
-              "]");
+                                                  "    \"value\",\n"
+                                                  "    1,\n"
+                                                  "    {\n"
+                                                  "        \"bytes\": [],\n"
+                                                  "        \"subtype\": 128\n"
+                                                  "    }\n"
+                                                  "]");
     }
 }

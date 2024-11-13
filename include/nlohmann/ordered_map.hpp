@@ -25,8 +25,8 @@ NLOHMANN_JSON_NAMESPACE_BEGIN
 /// ordered_map: a minimal map-like container that preserves insertion order
 /// for use within nlohmann::basic_json<ordered_map>
 template <class Key, class T, class IgnoredLess = std::less<Key>,
-          class Allocator = std::allocator<std::pair<const Key, T>>>
-                  struct ordered_map : std::vector<std::pair<const Key, T>, Allocator>
+          class Allocator = std::allocator<std::pair<const Key, T >>>
+struct ordered_map : std::vector<std::pair<const Key, T>, Allocator>
 {
     using key_type = Key;
     using mapped_type = T;
@@ -44,14 +44,14 @@ template <class Key, class T, class IgnoredLess = std::less<Key>,
     // Explicit constructors instead of `using Container::Container`
     // otherwise older compilers choke on it (GCC <= 5.5, xcode <= 9.4)
     ordered_map() noexcept(noexcept(Container())) : Container{} {}
-    explicit ordered_map(const Allocator& alloc) noexcept(noexcept(Container(alloc))) : Container{alloc} {}
+    explicit ordered_map(const Allocator & alloc) noexcept(noexcept(Container(alloc))) : Container{alloc} {}
     template <class It>
     ordered_map(It first, It last, const Allocator& alloc = Allocator())
         : Container{first, last, alloc} {}
     ordered_map(std::initializer_list<value_type> init, const Allocator& alloc = Allocator() )
         : Container{init, alloc} {}
 
-    std::pair<iterator, bool> emplace(const key_type& key, T&& t)
+    std::pair<iterator, bool> emplace(const key_type & key, T&& t)
     {
         for (auto it = this->begin(); it != this->end(); ++it)
         {
@@ -79,7 +79,7 @@ template <class Key, class T, class IgnoredLess = std::less<Key>,
         return {std::prev(this->end()), true};
     }
 
-    T& operator[](const key_type& key)
+    T& operator[](const key_type & key)
     {
         return emplace(key, T{}).first->second;
     }
@@ -91,7 +91,7 @@ template <class Key, class T, class IgnoredLess = std::less<Key>,
         return emplace(std::forward<KeyType>(key), T{}).first->second;
     }
 
-    const T& operator[](const key_type& key) const
+    const T& operator[](const key_type & key) const
     {
         return at(key);
     }
@@ -103,7 +103,7 @@ template <class Key, class T, class IgnoredLess = std::less<Key>,
         return at(std::forward<KeyType>(key));
     }
 
-    T& at(const key_type& key)
+    T & at(const key_type & key)
     {
         for (auto it = this->begin(); it != this->end(); ++it)
         {
@@ -131,7 +131,7 @@ template <class Key, class T, class IgnoredLess = std::less<Key>,
         JSON_THROW(std::out_of_range("key not found"));
     }
 
-    const T& at(const key_type& key) const
+    const T & at(const key_type & key) const
     {
         for (auto it = this->begin(); it != this->end(); ++it)
         {
@@ -159,7 +159,7 @@ template <class Key, class T, class IgnoredLess = std::less<Key>,
         JSON_THROW(std::out_of_range("key not found"));
     }
 
-    size_type erase(const key_type& key)
+    size_type erase(const key_type & key)
     {
         for (auto it = this->begin(); it != this->end(); ++it)
         {
@@ -257,7 +257,7 @@ template <class Key, class T, class IgnoredLess = std::less<Key>,
         return Container::begin() + offset;
     }
 
-    size_type count(const key_type& key) const
+    size_type count(const key_type & key) const
     {
         for (auto it = this->begin(); it != this->end(); ++it)
         {
@@ -283,7 +283,7 @@ template <class Key, class T, class IgnoredLess = std::less<Key>,
         return 0;
     }
 
-    iterator find(const key_type& key)
+    iterator find(const key_type & key)
     {
         for (auto it = this->begin(); it != this->end(); ++it)
         {
@@ -309,7 +309,7 @@ template <class Key, class T, class IgnoredLess = std::less<Key>,
         return Container::end();
     }
 
-    const_iterator find(const key_type& key) const
+    const_iterator find(const key_type & key) const
     {
         for (auto it = this->begin(); it != this->end(); ++it)
         {
@@ -326,7 +326,7 @@ template <class Key, class T, class IgnoredLess = std::less<Key>,
         return emplace(value.first, std::move(value.second));
     }
 
-    std::pair<iterator, bool> insert( const value_type& value )
+    std::pair<iterator, bool> insert( const value_type & value )
     {
         for (auto it = this->begin(); it != this->end(); ++it)
         {
@@ -341,9 +341,9 @@ template <class Key, class T, class IgnoredLess = std::less<Key>,
 
     template<typename InputIt>
     using require_input_iter = typename std::enable_if<std::is_convertible<typename std::iterator_traits<InputIt>::iterator_category,
-            std::input_iterator_tag>::value>::type;
+          std::input_iterator_tag>::value>::type;
 
-    template<typename InputIt, typename = require_input_iter<InputIt>>
+    template<typename InputIt, typename = require_input_iter<InputIt >>
     void insert(InputIt first, InputIt last)
     {
         for (auto it = first; it != last; ++it)

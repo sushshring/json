@@ -159,31 +159,31 @@ class person_with_private_alphabet
     bool operator==(const person_with_private_alphabet& other) const
     {
         return  a == other.a &&
-                b == other.b &&
-                c == other.c &&
-                d == other.d &&
-                e == other.e &&
-                f == other.f &&
-                g == other.g &&
-                h == other.h &&
-                i == other.i &&
-                j == other.j &&
-                k == other.k &&
-                l == other.l &&
-                m == other.m &&
-                n == other.n &&
-                o == other.o &&
-                p == other.p &&
-                q == other.q &&
-                r == other.r &&
-                s == other.s &&
-                t == other.t &&
-                u == other.u &&
-                v == other.v &&
-                w == other.w &&
-                x == other.x &&
-                y == other.y &&
-                z == other.z;
+        b == other.b &&
+        c == other.c &&
+        d == other.d &&
+        e == other.e &&
+        f == other.f &&
+        g == other.g &&
+        h == other.h &&
+        i == other.i &&
+        j == other.j &&
+        k == other.k &&
+        l == other.l &&
+        m == other.m &&
+        n == other.n &&
+        o == other.o &&
+        p == other.p &&
+        q == other.q &&
+        r == other.r &&
+        s == other.s &&
+        t == other.t &&
+        u == other.u &&
+        v == other.v &&
+        w == other.w &&
+        x == other.x &&
+        y == other.y &&
+        z == other.z;
     }
 
   private:
@@ -222,31 +222,31 @@ class person_with_public_alphabet
     bool operator==(const person_with_public_alphabet& other) const
     {
         return  a == other.a &&
-                b == other.b &&
-                c == other.c &&
-                d == other.d &&
-                e == other.e &&
-                f == other.f &&
-                g == other.g &&
-                h == other.h &&
-                i == other.i &&
-                j == other.j &&
-                k == other.k &&
-                l == other.l &&
-                m == other.m &&
-                n == other.n &&
-                o == other.o &&
-                p == other.p &&
-                q == other.q &&
-                r == other.r &&
-                s == other.s &&
-                t == other.t &&
-                u == other.u &&
-                v == other.v &&
-                w == other.w &&
-                x == other.x &&
-                y == other.y &&
-                z == other.z;
+        b == other.b &&
+        c == other.c &&
+        d == other.d &&
+        e == other.e &&
+        f == other.f &&
+        g == other.g &&
+        h == other.h &&
+        i == other.i &&
+        j == other.j &&
+        k == other.k &&
+        l == other.l &&
+        m == other.m &&
+        n == other.n &&
+        o == other.o &&
+        p == other.p &&
+        q == other.q &&
+        r == other.r &&
+        s == other.s &&
+        t == other.t &&
+        u == other.u &&
+        v == other.v &&
+        w == other.w &&
+        x == other.x &&
+        y == other.y &&
+        z == other.z;
     }
 
     int a = 0;

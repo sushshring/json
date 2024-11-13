@@ -394,7 +394,7 @@ inline void to_json(BasicJsonType& j, const std::pair<T1, T2>& p)
 
 // for https://github.com/nlohmann/json/pull/1134
 template<typename BasicJsonType, typename T,
-         enable_if_t<std::is_same<T, iteration_proxy_value<typename BasicJsonType::iterator>>::value, int> = 0>
+         enable_if_t<std::is_same<T, iteration_proxy_value<typename BasicJsonType::iterator >>::value, int> = 0>
 inline void to_json(BasicJsonType& j, const T& b)
 {
     j = { {b.key(), b.value()} };
@@ -423,7 +423,7 @@ inline void to_json(BasicJsonType& j, const std_fs::path& p)
 struct to_json_fn
 {
     template<typename BasicJsonType, typename T>
-    auto operator()(BasicJsonType& j, T&& val) const noexcept(noexcept(to_json(j, std::forward<T>(val))))
+    auto operator()(BasicJsonType & j, T&& val) const noexcept(noexcept(to_json(j, std::forward<T>(val))))
     -> decltype(to_json(j, std::forward<T>(val)), void())
     {
         return to_json(j, std::forward<T>(val));

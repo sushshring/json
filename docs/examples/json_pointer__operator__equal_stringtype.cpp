@@ -18,9 +18,9 @@ int main()
 
     // compare JSON pointers and strings
     std::cout << std::boolalpha
-              << "\"" << ptr0 << "\" == \"" << str0 << "\": " << (ptr0 == str0) << '\n'
-              << "\"" << str0 << "\" == \"" << ptr1 << "\": " << (str0 == ptr1) << '\n'
-              << "\"" << ptr2 << "\" == \"" << str1 << "\": " << (ptr2 == str1) << std::endl;
+    << "\"" << ptr0 << "\" == \"" << str0 << "\": " << (ptr0 == str0) << '\n'
+    << "\"" << str0 << "\" == \"" << ptr1 << "\": " << (str0 == ptr1) << '\n'
+    << "\"" << ptr2 << "\" == \"" << str1 << "\": " << (ptr2 == str1) << std::endl;
 
     try
     {

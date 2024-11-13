@@ -140,7 +140,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     )
     {
         return ::nlohmann::detail::parser<basic_json, InputAdapterType>(std::move(adapter),
-                std::move(cb), allow_exceptions, ignore_comments);
+               std::move(cb), allow_exceptions, ignore_comments);
     }
 
   private:
@@ -174,7 +174,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     /// how to treat CBOR tags
     using cbor_tag_handler_t = detail::cbor_tag_handler_t;
     /// helper type for initializer lists of basic_json values
-    using initializer_list_t = std::initializer_list<detail::json_ref<basic_json>>;
+    using initializer_list_t = std::initializer_list<detail::json_ref<basic_json >>;
 
     using input_format_t = detail::input_format_t;
     /// SAX interface type, see @ref nlohmann::json_sax
@@ -337,11 +337,11 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
           basic_json,
           default_object_comparator_t,
           AllocatorType<std::pair<const StringType,
-          basic_json>>>;
+          basic_json >>>;
 
     /// @brief a type for an array
     /// @sa https://json.nlohmann.me/api/basic_json/array_t/
-    using array_t = ArrayType<basic_json, AllocatorType<basic_json>>;
+    using array_t = ArrayType<basic_json, AllocatorType<basic_json >>;
 
     /// @brief a type for a string
     /// @sa https://json.nlohmann.me/api/basic_json/string_t/
@@ -381,7 +381,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     static T* create(Args&& ... args)
     {
         AllocatorType<T> alloc;
-        using AllocatorTraits = std::allocator_traits<AllocatorType<T>>;
+        using AllocatorTraits = std::allocator_traits<AllocatorType<T >>;
 
         auto deleter = [&](T * obj)
         {
@@ -543,7 +543,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         json_value(array_t&& value) : array(create<array_t>(std::move(value))) {}
 
         /// constructor for binary arrays
-        json_value(const typename binary_t::container_type& value) : binary(create<binary_t>(value)) {}
+        json_value(const typename binary_t::container_type & value) : binary(create<binary_t>(value)) {}
 
         /// constructor for rvalue binary arrays
         json_value(typename binary_t::container_type&& value) : binary(create<binary_t>(std::move(value))) {}
@@ -557,10 +557,10 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         void destroy(value_t t)
         {
             if (
-                (t == value_t::object && object == nullptr) ||
-                (t == value_t::array && array == nullptr) ||
-                (t == value_t::string && string == nullptr) ||
-                (t == value_t::binary && binary == nullptr)
+            (t == value_t::object && object == nullptr) ||
+            (t == value_t::array && array == nullptr) ||
+            (t == value_t::string && string == nullptr) ||
+            (t == value_t::binary && binary == nullptr)
             )
             {
                 //not initialized (e.g. due to exception in the ctor)
@@ -1142,7 +1142,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
 
     template<typename JsonRef,
              detail::enable_if_t<detail::conjunction<detail::is_json_ref<JsonRef>,
-                                 std::is_same<typename JsonRef::value_type, basic_json>>::value, int> = 0 >
+                                 std::is_same<typename JsonRef::value_type, basic_json >>::value, int> = 0 >
     basic_json(const JsonRef& ref) : basic_json(ref.moved_or_copied()) {}
 
     /// @brief copy constructor
@@ -1758,7 +1758,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
 
     @since version 2.1.0
     */
-    template < typename ValueTypeCV, typename ValueType = detail::uncvref_t<ValueTypeCV>>
+    template < typename ValueTypeCV, typename ValueType = detail::uncvref_t<ValueTypeCV >>
 #if defined(JSON_HAS_CPP_14)
     constexpr
 #endif
@@ -1900,21 +1900,21 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     */
     template < typename ValueType, typename std::enable_if <
                    detail::conjunction <
-                       detail::negation<std::is_pointer<ValueType>>,
-                       detail::negation<std::is_same<ValueType, std::nullptr_t>>,
-                       detail::negation<std::is_same<ValueType, detail::json_ref<basic_json>>>,
-                                        detail::negation<std::is_same<ValueType, typename string_t::value_type>>,
-                                        detail::negation<detail::is_basic_json<ValueType>>,
-                                        detail::negation<std::is_same<ValueType, std::initializer_list<typename string_t::value_type>>>,
+                       detail::negation<std::is_pointer<ValueType >>,
+                       detail::negation<std::is_same<ValueType, std::nullptr_t >>,
+                       detail::negation<std::is_same<ValueType, detail::json_ref<basic_json >>>,
+                       detail::negation<std::is_same<ValueType, typename string_t::value_type >>,
+                       detail::negation<detail::is_basic_json<ValueType >>,
+                       detail::negation<std::is_same<ValueType, std::initializer_list<typename string_t::value_type >>>,
 #if defined(JSON_HAS_CPP_17) && (defined(__GNUC__) || (defined(_MSC_VER) && _MSC_VER >= 1910 && _MSC_VER <= 1914))
-                                                detail::negation<std::is_same<ValueType, std::string_view>>,
+                       detail::negation<std::is_same<ValueType, std::string_view >>,
 #endif
 #if defined(JSON_HAS_CPP_17) && JSON_HAS_STATIC_RTTI
-                                                detail::negation<std::is_same<ValueType, std::any>>,
+                       detail::negation<std::is_same<ValueType, std::any >>,
 #endif
-                                                detail::is_detected_lazy<detail::get_template_function, const basic_json_t&, ValueType>
-                                                >::value, int >::type = 0 >
-                                        JSON_EXPLICIT operator ValueType() const
+                       detail::is_detected_lazy<detail::get_template_function, const basic_json_t&, ValueType>
+                       >::value, int >::type = 0 >
+    JSON_EXPLICIT operator ValueType() const
     {
         // delegate the call to get<>() const
         return get<ValueType>();
@@ -2230,12 +2230,12 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
   private:
     template<typename KeyType>
     using is_comparable_with_object_key = detail::is_comparable <
-        object_comparator_t, const typename object_t::key_type&, KeyType >;
+                                          object_comparator_t, const typename object_t::key_type&, KeyType >;
 
     template<typename ValueType>
     using value_return_type = std::conditional <
-        detail::is_c_string_uncvref<ValueType>::value,
-        string_t, typename std::decay<ValueType>::type >;
+                              detail::is_c_string_uncvref<ValueType>::value,
+                              string_t, typename std::decay<ValueType>::type >;
 
   public:
     /// @brief access specified object element with default value
@@ -2243,7 +2243,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     template < class ValueType, detail::enable_if_t <
                    !detail::is_transparent<object_comparator_t>::value
                    && detail::is_getable<basic_json_t, ValueType>::value
-                   && !std::is_same<value_t, detail::uncvref_t<ValueType>>::value, int > = 0 >
+                   && !std::is_same<value_t, detail::uncvref_t<ValueType >>::value, int > = 0 >
     ValueType value(const typename object_t::key_type& key, const ValueType& default_value) const
     {
         // value only works for objects
@@ -2268,7 +2268,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
                detail::enable_if_t <
                    !detail::is_transparent<object_comparator_t>::value
                    && detail::is_getable<basic_json_t, ReturnType>::value
-                   && !std::is_same<value_t, detail::uncvref_t<ValueType>>::value, int > = 0 >
+                   && !std::is_same<value_t, detail::uncvref_t<ValueType >>::value, int > = 0 >
     ReturnType value(const typename object_t::key_type& key, ValueType && default_value) const
     {
         // value only works for objects
@@ -2294,7 +2294,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
                    && !detail::is_json_pointer<KeyType>::value
                    && is_comparable_with_object_key<KeyType>::value
                    && detail::is_getable<basic_json_t, ValueType>::value
-                   && !std::is_same<value_t, detail::uncvref_t<ValueType>>::value, int > = 0 >
+                   && !std::is_same<value_t, detail::uncvref_t<ValueType >>::value, int > = 0 >
     ValueType value(KeyType && key, const ValueType& default_value) const
     {
         // value only works for objects
@@ -2321,7 +2321,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
                    && !detail::is_json_pointer<KeyType>::value
                    && is_comparable_with_object_key<KeyType>::value
                    && detail::is_getable<basic_json_t, ReturnType>::value
-                   && !std::is_same<value_t, detail::uncvref_t<ValueType>>::value, int > = 0 >
+                   && !std::is_same<value_t, detail::uncvref_t<ValueType >>::value, int > = 0 >
     ReturnType value(KeyType && key, ValueType && default_value) const
     {
         // value only works for objects
@@ -2344,7 +2344,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     /// @sa https://json.nlohmann.me/api/basic_json/value/
     template < class ValueType, detail::enable_if_t <
                    detail::is_getable<basic_json_t, ValueType>::value
-                   && !std::is_same<value_t, detail::uncvref_t<ValueType>>::value, int > = 0 >
+                   && !std::is_same<value_t, detail::uncvref_t<ValueType >>::value, int > = 0 >
     ValueType value(const json_pointer& ptr, const ValueType& default_value) const
     {
         // value only works for objects
@@ -2369,7 +2369,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     template < class ValueType, class ReturnType = typename value_return_type<ValueType>::type,
                detail::enable_if_t <
                    detail::is_getable<basic_json_t, ReturnType>::value
-                   && !std::is_same<value_t, detail::uncvref_t<ValueType>>::value, int > = 0 >
+                   && !std::is_same<value_t, detail::uncvref_t<ValueType >>::value, int > = 0 >
     ReturnType value(const json_pointer& ptr, ValueType && default_value) const
     {
         // value only works for objects
@@ -2392,7 +2392,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     template < class ValueType, class BasicJsonType, detail::enable_if_t <
                    detail::is_basic_json<BasicJsonType>::value
                    && detail::is_getable<basic_json_t, ValueType>::value
-                   && !std::is_same<value_t, detail::uncvref_t<ValueType>>::value, int > = 0 >
+                   && !std::is_same<value_t, detail::uncvref_t<ValueType >>::value, int > = 0 >
     JSON_HEDLEY_DEPRECATED_FOR(3.11.0, basic_json::json_pointer or nlohmann::json_pointer<basic_json::string_t>) // NOLINT(readability/alt_tokens)
     ValueType value(const ::nlohmann::json_pointer<BasicJsonType>& ptr, const ValueType& default_value) const
     {
@@ -2403,7 +2403,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
                detail::enable_if_t <
                    detail::is_basic_json<BasicJsonType>::value
                    && detail::is_getable<basic_json_t, ReturnType>::value
-                   && !std::is_same<value_t, detail::uncvref_t<ValueType>>::value, int > = 0 >
+                   && !std::is_same<value_t, detail::uncvref_t<ValueType >>::value, int > = 0 >
     JSON_HEDLEY_DEPRECATED_FOR(3.11.0, basic_json::json_pointer or nlohmann::json_pointer<basic_json::string_t>) // NOLINT(readability/alt_tokens)
     ReturnType value(const ::nlohmann::json_pointer<BasicJsonType>& ptr, ValueType && default_value) const
     {
@@ -3993,7 +3993,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
 #ifndef JSON_NO_IO
     /// @brief serialize to stream
     /// @sa https://json.nlohmann.me/api/basic_json/operator_ltlt/
-    friend std::ostream& operator<<(std::ostream& o, const basic_json& j)
+    friend std::ostream & operator<<(std::ostream& o, const basic_json& j)
     {
         // read width member and use it as indentation parameter if nonzero
         const bool pretty_print = o.width() > 0;
@@ -4015,7 +4015,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     ///             operator<<(std::ostream&, const basic_json&) instead; that is,
     ///             replace calls like `j >> o;` with `o << j;`.
     JSON_HEDLEY_DEPRECATED_FOR(3.0.0, operator<<(std::ostream&, const basic_json&))
-    friend std::ostream& operator>>(const basic_json& j, std::ostream& o)
+    friend std::ostream & operator>>(const basic_json& j, std::ostream& o)
     {
         return o << j;
     }
@@ -4107,8 +4107,8 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     {
         auto ia = detail::input_adapter(std::forward<InputType>(i));
         return format == input_format_t::json
-               ? parser(std::move(ia), nullptr, true, ignore_comments).sax_parse(sax, strict)
-               : detail::binary_reader<basic_json, decltype(ia), SAX>(std::move(ia), format).sax_parse(format, sax, strict);
+                         ? parser(std::move(ia), nullptr, true, ignore_comments).sax_parse(sax, strict)
+                         : detail::binary_reader<basic_json, decltype(ia), SAX>(std::move(ia), format).sax_parse(format, sax, strict);
     }
 
     /// @brief generate SAX events
@@ -4122,8 +4122,8 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     {
         auto ia = detail::input_adapter(std::move(first), std::move(last));
         return format == input_format_t::json
-               ? parser(std::move(ia), nullptr, true, ignore_comments).sax_parse(sax, strict)
-               : detail::binary_reader<basic_json, decltype(ia), SAX>(std::move(ia), format).sax_parse(format, sax, strict);
+                         ? parser(std::move(ia), nullptr, true, ignore_comments).sax_parse(sax, strict)
+                         : detail::binary_reader<basic_json, decltype(ia), SAX>(std::move(ia), format).sax_parse(format, sax, strict);
     }
 
     /// @brief generate SAX events
@@ -4141,10 +4141,10 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     {
         auto ia = i.get();
         return format == input_format_t::json
-               // NOLINTNEXTLINE(hicpp-move-const-arg,performance-move-const-arg)
-               ? parser(std::move(ia), nullptr, true, ignore_comments).sax_parse(sax, strict)
-               // NOLINTNEXTLINE(hicpp-move-const-arg,performance-move-const-arg)
-               : detail::binary_reader<basic_json, decltype(ia), SAX>(std::move(ia), format).sax_parse(format, sax, strict);
+                         // NOLINTNEXTLINE(hicpp-move-const-arg,performance-move-const-arg)
+                         ? parser(std::move(ia), nullptr, true, ignore_comments).sax_parse(sax, strict)
+                         // NOLINTNEXTLINE(hicpp-move-const-arg,performance-move-const-arg)
+                         : detail::binary_reader<basic_json, decltype(ia), SAX>(std::move(ia), format).sax_parse(format, sax, strict);
     }
 #ifndef JSON_NO_IO
     /// @brief deserialize from stream
@@ -4154,14 +4154,14 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     ///             operator>>(std::istream&, basic_json&) instead; that is,
     ///             replace calls like `j << i;` with `i >> j;`.
     JSON_HEDLEY_DEPRECATED_FOR(3.0.0, operator>>(std::istream&, basic_json&))
-    friend std::istream& operator<<(basic_json& j, std::istream& i)
+    friend std::istream & operator<<(basic_json& j, std::istream& i)
     {
         return operator>>(i, j);
     }
 
     /// @brief deserialize from stream
     /// @sa https://json.nlohmann.me/api/basic_json/operator_gtgt/
-    friend std::istream& operator>>(std::istream& i, basic_json& j)
+    friend std::istream & operator>>(std::istream& i, basic_json& j)
     {
         parser(detail::input_adapter(i)).parse(false, j);
         return i;
@@ -4220,7 +4220,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         {
         }
 
-        data(size_type cnt, const basic_json& val)
+        data(size_type cnt, const basic_json & val)
             : m_type(value_t::array)
         {
             m_value.array = create<array_t>(cnt, val);

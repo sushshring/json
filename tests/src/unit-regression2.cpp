@@ -444,7 +444,7 @@ TEST_CASE("regression tests 2")
 #ifdef JSON_HAS_CPP_17
     SECTION("issue #1292 - Serializing std::variant causes stack overflow")
     {
-        static_assert(!std::is_constructible<json, std::variant<int, float>>::value, "unexpected value");
+        static_assert(!std::is_constructible<json, std::variant<int, float >>::value, "unexpected value");
     }
 #endif
 
@@ -586,15 +586,15 @@ TEST_CASE("regression tests 2")
 
     SECTION("issue #1805 - A pair<T1, T2> is json constructible only if T1 and T2 are json constructible")
     {
-        static_assert(!std::is_constructible<json, std::pair<std::string, NotSerializableData>>::value, "unexpected result");
-        static_assert(!std::is_constructible<json, std::pair<NotSerializableData, std::string>>::value, "unexpected result");
-        static_assert(std::is_constructible<json, std::pair<int, std::string>>::value, "unexpected result");
+        static_assert(!std::is_constructible<json, std::pair<std::string, NotSerializableData >>::value, "unexpected result");
+        static_assert(!std::is_constructible<json, std::pair<NotSerializableData, std::string >>::value, "unexpected result");
+        static_assert(std::is_constructible<json, std::pair<int, std::string >>::value, "unexpected result");
     }
     SECTION("issue #1825 - A tuple<Args..> is json constructible only if all T in Args are json constructible")
     {
-        static_assert(!std::is_constructible<json, std::tuple<std::string, NotSerializableData>>::value, "unexpected result");
-        static_assert(!std::is_constructible<json, std::tuple<NotSerializableData, std::string>>::value, "unexpected result");
-        static_assert(std::is_constructible<json, std::tuple<int, std::string>>::value, "unexpected result");
+        static_assert(!std::is_constructible<json, std::tuple<std::string, NotSerializableData >>::value, "unexpected result");
+        static_assert(!std::is_constructible<json, std::tuple<NotSerializableData, std::string >>::value, "unexpected result");
+        static_assert(std::is_constructible<json, std::tuple<int, std::string >>::value, "unexpected result");
     }
 
     SECTION("issue #1983 - JSON patch diff for op=add formation is not as per standard (RFC 6902)")
@@ -655,9 +655,9 @@ TEST_CASE("regression tests 2")
         auto jsonAnimals_parsed = nlohmann::ordered_json::parse(jsonAnimals.dump());
         CHECK(jsonAnimals == jsonAnimals_parsed);
 
-        const std::vector<std::pair<std::string, int64_t>> intData = {std::make_pair("aaaa", 11),
-                                                                      std::make_pair("bbb", 222)
-                                                                     };
+        const std::vector<std::pair<std::string, int64_t >> intData = {std::make_pair("aaaa", 11),
+                                                                       std::make_pair("bbb", 222)
+                                                                      };
         nlohmann::ordered_json jsonObj;
         for (const auto& data : intData)
         {
@@ -692,14 +692,14 @@ TEST_CASE("regression tests 2")
         {
             {
                 const json j = {7, 4};
-                auto arr = j.get<std::array<NonDefaultConstructible, 2>>();
+                auto arr = j.get<std::array<NonDefaultConstructible, 2 >> ();
                 CHECK(arr[0].x == 7);
                 CHECK(arr[1].x == 4);
             }
 
             {
                 const json j = 7;
-                CHECK_THROWS_AS((j.get<std::array<NonDefaultConstructible, 1>>()), json::type_error);
+                CHECK_THROWS_AS((j.get<std::array<NonDefaultConstructible, 1 >> ()), json::type_error);
             }
         }
 
@@ -707,28 +707,28 @@ TEST_CASE("regression tests 2")
         {
             {
                 const json j = {3, 8};
-                auto p = j.get<std::pair<NonDefaultConstructible, NonDefaultConstructible>>();
+                auto p = j.get<std::pair<NonDefaultConstructible, NonDefaultConstructible >> ();
                 CHECK(p.first.x == 3);
                 CHECK(p.second.x == 8);
             }
 
             {
                 const json j = {4, 1};
-                auto p = j.get<std::pair<int, NonDefaultConstructible>>();
+                auto p = j.get<std::pair<int, NonDefaultConstructible >> ();
                 CHECK(p.first == 4);
                 CHECK(p.second.x == 1);
             }
 
             {
                 const json j = {6, 7};
-                auto p = j.get<std::pair<NonDefaultConstructible, int>>();
+                auto p = j.get<std::pair<NonDefaultConstructible, int >> ();
                 CHECK(p.first.x == 6);
                 CHECK(p.second == 7);
             }
 
             {
                 const json j = 7;
-                CHECK_THROWS_AS((j.get<std::pair<NonDefaultConstructible, int>>()), json::type_error);
+                CHECK_THROWS_AS((j.get<std::pair<NonDefaultConstructible, int >> ()), json::type_error);
             }
         }
 
@@ -736,13 +736,13 @@ TEST_CASE("regression tests 2")
         {
             {
                 const json j = {9};
-                auto t = j.get<std::tuple<NonDefaultConstructible>>();
+                auto t = j.get<std::tuple<NonDefaultConstructible >> ();
                 CHECK(std::get<0>(t).x == 9);
             }
 
             {
                 const json j = {9, 8, 7};
-                auto t = j.get<std::tuple<NonDefaultConstructible, int, NonDefaultConstructible>>();
+                auto t = j.get<std::tuple<NonDefaultConstructible, int, NonDefaultConstructible >> ();
                 CHECK(std::get<0>(t).x == 9);
                 CHECK(std::get<1>(t) == 8);
                 CHECK(std::get<2>(t).x == 7);
@@ -750,7 +750,7 @@ TEST_CASE("regression tests 2")
 
             {
                 const json j = 7;
-                CHECK_THROWS_AS((j.get<std::tuple<NonDefaultConstructible>>()), json::type_error);
+                CHECK_THROWS_AS((j.get<std::tuple<NonDefaultConstructible >> ()), json::type_error);
             }
         }
     }
@@ -817,7 +817,7 @@ TEST_CASE("regression tests 2")
 
     SECTION("issue #2982 - to_{binary format} does not provide a mechanism for specifying a custom allocator for the returned type")
     {
-        std::vector<std::uint8_t, my_allocator<std::uint8_t>> my_vector;
+        std::vector<std::uint8_t, my_allocator<std::uint8_t >> my_vector;
         json j = {1, 2, 3, 4};
         json::to_cbor(j, my_vector);
         json k = json::from_cbor(my_vector);

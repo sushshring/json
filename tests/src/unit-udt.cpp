@@ -159,13 +159,13 @@ static bool operator==(const person& lhs, const person& rhs)
 static bool operator==(const contact& lhs, const contact& rhs)
 {
     return std::tie(lhs.m_person, lhs.m_address) ==
-           std::tie(rhs.m_person, rhs.m_address);
+               std::tie(rhs.m_person, rhs.m_address);
 }
 
 static bool operator==(const contact_book& lhs, const contact_book& rhs)
 {
     return std::tie(lhs.m_book_name, lhs.m_book_id, lhs.m_contacts) ==
-           std::tie(rhs.m_book_name, rhs.m_book_id, rhs.m_contacts);
+               std::tie(rhs.m_book_name, rhs.m_book_id, rhs.m_contacts);
 }
 } // namespace udt
 
@@ -223,7 +223,7 @@ static void from_json(const nlohmann::json& j, contact_book& cb)
 {
     cb.m_book_name = j["name"].get<name>();
     cb.m_book_id = j["id"].get<book_id>();
-    cb.m_contacts = j["contacts"].get<std::vector<contact>>();
+    cb.m_contacts = j["contacts"].get<std::vector<contact >> ();
 }
 } // namespace udt
 
@@ -252,15 +252,15 @@ TEST_CASE("basic usage" * doctest::test_suite("udt"))
         CHECK(json(sfinae_addict) == R"({"name":"theo", "age":23, "country":"France"})"_json);
         CHECK(json("Paris") == json(addr));
         CHECK(json(cpp_programmer) ==
-              R"({"person" : {"age":23, "name":"theo", "country":"France"}, "address":"Paris"})"_json);
+                  R"({"person" : {"age":23, "name":"theo", "country":"France"}, "address":"Paris"})"_json);
         CHECK(json(large_id) == json(static_cast<std::uint64_t>(1) << 63));
         CHECK(json(large_id) > 0u);
         CHECK(to_string(json(large_id)) == "9223372036854775808");
         CHECK(json(large_id).is_number_unsigned());
 
         CHECK(
-            json(book) ==
-            R"({"name":"C++", "id":42, "contacts" : [{"person" : {"age":23, "name":"theo", "country":"France"}, "address":"Paris"}, {"person" : {"age":42, "country":"中华人民共和国", "name":"王芳"}, "address":"Paris"}]})"_json);
+        json(book) ==
+                R"({"name":"C++", "id":42, "contacts" : [{"person" : {"age":23, "name":"theo", "country":"France"}, "address":"Paris"}, {"person" : {"age":42, "country":"中华人民共和国", "name":"王芳"}, "address":"Paris"}]})"_json);
 
     }
 
@@ -274,7 +274,7 @@ TEST_CASE("basic usage" * doctest::test_suite("udt"))
             const auto book_name = big_json["name"].get<udt::name>();
             const auto book_id = big_json["id"].get<udt::book_id>();
             const auto contacts =
-                big_json["contacts"].get<std::vector<udt::contact>>();
+                big_json["contacts"].get<std::vector<udt::contact >> ();
             const auto contact_json = big_json["contacts"].at(0);
             const auto contact = contact_json.get<udt::contact>();
             const auto person = contact_json["person"].get<udt::person>();
@@ -352,7 +352,7 @@ struct legacy_type
 namespace nlohmann
 {
 template <typename T>
-struct adl_serializer<std::shared_ptr<T>>
+struct adl_serializer<std::shared_ptr<T >>
 {
     static void to_json(json& j, const std::shared_ptr<T>& opt)
     {
@@ -382,12 +382,12 @@ struct adl_serializer<std::shared_ptr<T>>
 template <>
 struct adl_serializer<udt::legacy_type>
 {
-    static void to_json(json& j, const udt::legacy_type& l)
+    static void to_json(json & j, const udt::legacy_type & l)
     {
         j = std::stoi(l.number);
     }
 
-    static void from_json(const json& j, udt::legacy_type& l)
+    static void from_json(const json & j, udt::legacy_type & l)
     {
         l.number = std::to_string(j.get<int>());
     }
@@ -417,12 +417,12 @@ TEST_CASE("adl_serializer specialization" * doctest::test_suite("udt"))
             auto person = udt::person{{42}, {"John Doe"}, udt::country::russia};
             json j = person;
 
-            auto optPerson = j.get<std::shared_ptr<udt::person>>();
+            auto optPerson = j.get<std::shared_ptr<udt::person >> ();
             REQUIRE(optPerson);
             CHECK(*optPerson == person);
 
             j = nullptr;
-            optPerson = j.get<std::shared_ptr<udt::person>>();
+            optPerson = j.get<std::shared_ptr<udt::person >> ();
             CHECK(!optPerson);
         }
     }
@@ -449,7 +449,7 @@ TEST_CASE("adl_serializer specialization" * doctest::test_suite("udt"))
 namespace nlohmann
 {
 template <>
-struct adl_serializer<std::vector<float>>
+struct adl_serializer<std::vector<float >>
 {
     using type = std::vector<float>;
     static void to_json(json& j, const type& /*type*/)
@@ -474,7 +474,7 @@ TEST_CASE("even supported types can be specialized" * doctest::test_suite("udt")
 {
     json const j = std::vector<float> {1.0, 2.0, 3.0};
     CHECK(j.dump() == R"("hijacked!")");
-    auto f = j.get<std::vector<float>>();
+    auto f = j.get<std::vector<float >> ();
     // the single argument from_json method is preferred
     CHECK((f == std::vector<float> {4.0, 5.0, 6.0}));
 }
@@ -482,7 +482,7 @@ TEST_CASE("even supported types can be specialized" * doctest::test_suite("udt")
 namespace nlohmann
 {
 template <typename T>
-struct adl_serializer<std::unique_ptr<T>>
+struct adl_serializer<std::unique_ptr<T >>
 {
     static void to_json(json& j, const std::unique_ptr<T>& opt)
     {
@@ -530,12 +530,12 @@ TEST_CASE("Non-copyable types" * doctest::test_suite("udt"))
         auto person = udt::person{{42}, {"John Doe"}, udt::country::russia};
         json j = person;
 
-        auto optPerson = j.get<std::unique_ptr<udt::person>>();
+        auto optPerson = j.get<std::unique_ptr<udt::person >> ();
         REQUIRE(optPerson);
         CHECK(*optPerson == person);
 
         j = nullptr;
-        optPerson = j.get<std::unique_ptr<udt::person>>();
+        optPerson = j.get<std::unique_ptr<udt::person >> ();
         CHECK(!optPerson);
     }
 }
@@ -636,7 +636,7 @@ static void from_json(const BasicJsonType& j, non_pod& np)
 static bool operator==(small_pod lhs, small_pod rhs) noexcept
 {
     return std::tie(lhs.begin, lhs.middle, lhs.end) ==
-           std::tie(rhs.begin, rhs.middle, rhs.end);
+               std::tie(rhs.begin, rhs.middle, rhs.end);
 }
 
 static bool operator==(const  non_pod& lhs, const  non_pod& rhs) noexcept
@@ -776,7 +776,7 @@ TEST_CASE("different basic_json types conversions")
     {
         json const j = {{"forty", "two"}};
         custom_json cj = j;
-        auto m = j.get<std::map<std::string, std::string>>();
+        auto m = j.get<std::map<std::string, std::string >> ();
         CHECK(cj == m);
     }
 
@@ -831,7 +831,7 @@ TEST_CASE("Issue #924")
     auto j = json::array();
 
     CHECK_NOTHROW(j.get<Evil>());
-    CHECK_NOTHROW(j.get<std::vector<Evil>>());
+    CHECK_NOTHROW(j.get<std::vector<Evil >> ());
 
     // silence Wunused-template warnings
     Evil e(1);

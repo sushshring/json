@@ -14,11 +14,11 @@ using nlohmann::json;
 
 TEST_CASE("byte_container_with_subtype")
 {
-    using subtype_type = nlohmann::byte_container_with_subtype<std::vector<std::uint8_t>>::subtype_type;
+    using subtype_type = nlohmann::byte_container_with_subtype<std::vector<std::uint8_t >>::subtype_type;
 
     SECTION("empty container")
     {
-        nlohmann::byte_container_with_subtype<std::vector<std::uint8_t>> container;
+        nlohmann::byte_container_with_subtype<std::vector<std::uint8_t >> container;
 
         CHECK(!container.has_subtype());
         CHECK(container.subtype() == static_cast<subtype_type>(-1));
@@ -34,7 +34,7 @@ TEST_CASE("byte_container_with_subtype")
 
     SECTION("subtyped container")
     {
-        nlohmann::byte_container_with_subtype<std::vector<std::uint8_t>> container({}, 42);
+        nlohmann::byte_container_with_subtype<std::vector<std::uint8_t >> container({}, 42);
         CHECK(container.has_subtype());
         CHECK(container.subtype() == 42);
 
@@ -46,10 +46,10 @@ TEST_CASE("byte_container_with_subtype")
     SECTION("comparisons")
     {
         std::vector<std::uint8_t> const bytes = {{0xCA, 0xFE, 0xBA, 0xBE}};
-        nlohmann::byte_container_with_subtype<std::vector<std::uint8_t>> container1;
-        nlohmann::byte_container_with_subtype<std::vector<std::uint8_t>> container2({}, 42);
-        nlohmann::byte_container_with_subtype<std::vector<std::uint8_t>> container3(bytes);
-        nlohmann::byte_container_with_subtype<std::vector<std::uint8_t>> container4(bytes, 42);
+        nlohmann::byte_container_with_subtype<std::vector<std::uint8_t >> container1;
+        nlohmann::byte_container_with_subtype<std::vector<std::uint8_t >> container2({}, 42);
+        nlohmann::byte_container_with_subtype<std::vector<std::uint8_t >> container3(bytes);
+        nlohmann::byte_container_with_subtype<std::vector<std::uint8_t >> container4(bytes, 42);
 
         CHECK(container1 == container1);
         CHECK(container1 != container2);
