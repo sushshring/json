@@ -361,7 +361,6 @@ class json_sax_dom_parser
                 case value_t::number_integer:
                 case value_t::number_unsigned:
                 case value_t::number_float:
-                case value_t::binary:
                 default:
                 {
                     v.start_position = v.end_position - m_lexer->get_string().size();
@@ -685,7 +684,6 @@ class json_sax_dom_callback_parser
                 case value_t::number_integer:
                 case value_t::number_unsigned:
                 case value_t::number_float:
-                case value_t::binary:
                 default:
                 {
                     v.start_position = v.end_position - m_lexer->get_string().size();
