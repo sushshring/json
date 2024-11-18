@@ -284,7 +284,7 @@ struct detector
 };
 
 template<class Default, template<class...> class Op, class... Args>
-struct detector<Default, void_t<Op<Args... >>, Op, Args...>
+struct detector<Default, void_t<Op<Args...>>, Op, Args...>
 {
     using value_t = std::true_type;
     using type = Op<Args...>;
@@ -306,9 +306,9 @@ template<class Default, template<class...> class Op, class... Args>
 using detected_or_t = typename detected_or<Default, Op, Args...>::type;
 
 template<class Expected, template<class...> class Op, class... Args>
-using is_detected_exact = std::is_same<Expected, detected_t<Op, Args... >>;
+using is_detected_exact = std::is_same<Expected, detected_t<Op, Args...>>;
 
-template<class To, template<class...> class Op, class... Args >
+template<class To, template<class...> class Op, class... Args>
 using is_detected_convertible =
     std::is_convertible<detected_t<Op, Args...>, To>;
 
@@ -3298,7 +3298,7 @@ struct iterator_traits < T, enable_if_t < !std::is_pointer<T>::value >>
 };
 
 template<typename T>
-struct iterator_traits<T*, enable_if_t<std::is_object<T>::value >>
+struct iterator_traits<T*, enable_if_t<std::is_object<T>::value>>
 {
     using iterator_category = std::random_access_iterator_tag;
     using value_type = T;
@@ -3486,7 +3486,7 @@ template<typename>
 struct is_json_ref : std::false_type {};
 
 template<typename T>
-struct is_json_ref<json_ref<T >> : std::true_type {};
+struct is_json_ref<json_ref<T>> : std::true_type {};
 
 //////////////////////////
 // aliases for detected //
@@ -3673,41 +3673,41 @@ template <typename T>
 struct is_default_constructible : std::is_default_constructible<T> {};
 
 template <typename T1, typename T2>
-struct is_default_constructible<std::pair<T1, T2 >>
-            : conjunction<is_default_constructible<T1>, is_default_constructible<T2 >> {};
+struct is_default_constructible<std::pair<T1, T2>>
+            : conjunction<is_default_constructible<T1>, is_default_constructible<T2>> {};
 
 template <typename T1, typename T2>
-struct is_default_constructible<const std::pair<T1, T2 >>
-            : conjunction<is_default_constructible<T1>, is_default_constructible<T2 >> {};
+struct is_default_constructible<const std::pair<T1, T2>>
+            : conjunction<is_default_constructible<T1>, is_default_constructible<T2>> {};
 
 template <typename... Ts>
-struct is_default_constructible<std::tuple<Ts... >>
-            : conjunction<is_default_constructible<Ts>... > {};
+struct is_default_constructible<std::tuple<Ts...>>
+            : conjunction<is_default_constructible<Ts>...> {};
 
 template <typename... Ts>
-struct is_default_constructible<const std::tuple<Ts... >>
-            : conjunction<is_default_constructible<Ts>... > {};
+struct is_default_constructible<const std::tuple<Ts...>>
+            : conjunction<is_default_constructible<Ts>...> {};
 
 template <typename T, typename... Args>
 struct is_constructible : std::is_constructible<T, Args...> {};
 
 template <typename T1, typename T2>
-struct is_constructible<std::pair<T1, T2 >> : is_default_constructible<std::pair<T1, T2 >> {};
+struct is_constructible<std::pair<T1, T2>> : is_default_constructible<std::pair<T1, T2>> {};
 
 template <typename T1, typename T2>
-struct is_constructible<const std::pair<T1, T2 >> : is_default_constructible<const std::pair<T1, T2 >> {};
+struct is_constructible<const std::pair<T1, T2>> : is_default_constructible<const std::pair<T1, T2>> {};
 
 template <typename... Ts>
-struct is_constructible<std::tuple<Ts... >> : is_default_constructible<std::tuple<Ts... >> {};
+struct is_constructible<std::tuple<Ts...>> : is_default_constructible<std::tuple<Ts...>> {};
 
 template <typename... Ts>
-struct is_constructible<const std::tuple<Ts... >> : is_default_constructible<const std::tuple<Ts... >> {};
+struct is_constructible<const std::tuple<Ts...>> : is_default_constructible<const std::tuple<Ts...>> {};
 
 template<typename T, typename = void>
 struct is_iterator_traits : std::false_type {};
 
 template<typename T>
-struct is_iterator_traits<iterator_traits<T >>
+struct is_iterator_traits<iterator_traits<T>>
 {
   private:
     using traits = iterator_traits<T>;
@@ -3734,17 +3734,17 @@ struct is_range
     // and https://en.cppreference.com/w/cpp/iterator/sentinel_for
     // but reimplementing these would be too much work, as a lot of other concepts are used underneath
     static constexpr auto is_iterator_begin =
-        is_iterator_traits<iterator_traits<iterator >>::value;
+        is_iterator_traits<iterator_traits<iterator>>::value;
 
   public:
     static constexpr bool value = !std::is_same<iterator, nonesuch>::value && !std::is_same<sentinel, nonesuch>::value && is_iterator_begin;
 };
 
 template<typename R>
-using iterator_t = enable_if_t<is_range<R>::value, result_of_begin<decltype(std::declval<R&>()) >>;
+using iterator_t = enable_if_t<is_range<R>::value, result_of_begin<decltype(std::declval<R&>())>>;
 
 template<typename T>
-using range_value_t = value_type_t<iterator_traits<iterator_t<T >>>;
+using range_value_t = value_type_t<iterator_traits<iterator_t<T>>>;
 
 // The following implementation of is_complete_type is taken from
 // https://blogs.msdn.microsoft.com/vcblog/2015/12/02/partial-support-for-expression-sfinae-in-vs-2015-update-1/
@@ -3845,14 +3845,14 @@ struct is_compatible_array_type_impl <
     BasicJsonType, CompatibleArrayType,
     enable_if_t <
     is_detected<iterator_t, CompatibleArrayType>::value&&
-    is_iterator_traits<iterator_traits<detected_t<iterator_t, CompatibleArrayType >>>::value&&
+    is_iterator_traits<iterator_traits<detected_t<iterator_t, CompatibleArrayType>>>::value&&
 // special case for types like std::filesystem::path whose iterator's value_type are themselves
 // c.f. https://github.com/nlohmann/json/pull/3073
-    !std::is_same<CompatibleArrayType, detected_t<range_value_t, CompatibleArrayType >>::value >>
+    !std::is_same<CompatibleArrayType, detected_t<range_value_t, CompatibleArrayType>>::value >>
 {
     static constexpr bool value =
         is_constructible<BasicJsonType,
-        range_value_t<CompatibleArrayType >>::value;
+        range_value_t<CompatibleArrayType>>::value;
 };
 
 template<typename BasicJsonType, typename CompatibleArrayType>
@@ -3879,11 +3879,11 @@ struct is_constructible_array_type_impl <
 (std::is_move_assignable<ConstructibleArrayType>::value ||
  std::is_copy_assignable<ConstructibleArrayType>::value)&&
 is_detected<iterator_t, ConstructibleArrayType>::value&&
-is_iterator_traits<iterator_traits<detected_t<iterator_t, ConstructibleArrayType >>>::value&&
+is_iterator_traits<iterator_traits<detected_t<iterator_t, ConstructibleArrayType>>>::value&&
 is_detected<range_value_t, ConstructibleArrayType>::value&&
 // special case for types like std::filesystem::path whose iterator's value_type are themselves
 // c.f. https://github.com/nlohmann/json/pull/3073
-!std::is_same<ConstructibleArrayType, detected_t<range_value_t, ConstructibleArrayType >>::value&&
+!std::is_same<ConstructibleArrayType, detected_t<range_value_t, ConstructibleArrayType>>::value&&
         is_complete_type <
         detected_t<range_value_t, ConstructibleArrayType >>::value >>
 {
@@ -3950,7 +3950,7 @@ template<typename T1, typename T2>
 struct is_constructible_tuple : std::false_type {};
 
 template<typename T1, typename... Args>
-struct is_constructible_tuple<T1, std::tuple<Args... >> : conjunction<is_constructible<T1, Args>... > {};
+struct is_constructible_tuple<T1, std::tuple<Args...>> : conjunction<is_constructible<T1, Args>...> {};
 
 template<typename BasicJsonType, typename T>
 struct is_json_iterator_of : std::false_type {};
@@ -3967,10 +3967,10 @@ template<template <typename...> class Primary, typename T>
 struct is_specialization_of : std::false_type {};
 
 template<template <typename...> class Primary, typename... Args>
-struct is_specialization_of<Primary, Primary<Args... >> : std::true_type {};
+struct is_specialization_of<Primary, Primary<Args...>> : std::true_type {};
 
 template<typename T>
-using is_json_pointer = is_specialization_of<::nlohmann::json_pointer, uncvref_t<T >>;
+using is_json_pointer = is_specialization_of<::nlohmann::json_pointer, uncvref_t<T>>;
 
 // checks if A and B are comparable using Compare functor
 template<typename Compare, typename A, typename B, typename = void>
@@ -3988,7 +3988,7 @@ using detect_is_transparent = typename T::is_transparent;
 // type trait to check if KeyType can be used as object key (without a BasicJsonType)
 // see is_usable_as_basic_json_key_type below
 template<typename Comparator, typename ObjectKeyType, typename KeyTypeCVRef, bool RequireTransparentComparator = true,
-         bool ExcludeObjectKeyType = RequireTransparentComparator, typename KeyType = uncvref_t<KeyTypeCVRef >>
+         bool ExcludeObjectKeyType = RequireTransparentComparator, typename KeyType = uncvref_t<KeyTypeCVRef>>
 using is_usable_as_key_type = typename std::conditional <
                               is_comparable<Comparator, ObjectKeyType, KeyTypeCVRef>::value
                               && !(ExcludeObjectKeyType && std::is_same<KeyType,
@@ -4006,7 +4006,7 @@ using is_usable_as_key_type = typename std::conditional <
 //   - the comparator is transparent or RequireTransparentComparator is false
 //   - KeyType is not a JSON iterator or json_pointer
 template<typename BasicJsonType, typename KeyTypeCVRef, bool RequireTransparentComparator = true,
-         bool ExcludeObjectKeyType = RequireTransparentComparator, typename KeyType = uncvref_t<KeyTypeCVRef >>
+         bool ExcludeObjectKeyType = RequireTransparentComparator, typename KeyType = uncvref_t<KeyTypeCVRef>>
 using is_usable_as_basic_json_key_type = typename std::conditional <
         is_usable_as_key_type<typename BasicJsonType::object_comparator_t,
         typename BasicJsonType::object_t::key_type, KeyTypeCVRef,
@@ -4125,7 +4125,7 @@ struct value_in_range_of_impl2<OfType, T, true, true>
 
 template<typename OfType, typename T,
          bool NeverOutOfRange = never_out_of_range<OfType, T>::value,
-         typename = detail::enable_if_t<all_integral<OfType, T>::value >>
+         typename = detail::enable_if_t<all_integral<OfType, T>::value>>
 struct value_in_range_of_impl1;
 
 template<typename OfType, typename T>
@@ -4181,7 +4181,7 @@ template<typename T>
 struct is_c_string : bool_constant<impl::is_c_string<T>()> {};
 
 template<typename T>
-using is_c_string_uncvref = is_c_string<uncvref_t<T >>;
+using is_c_string_uncvref = is_c_string<uncvref_t<T>>;
 
 ///////////////////////////////////////////////////////////////////////////////
 // is_transparent
@@ -4902,13 +4902,13 @@ void())
 
 template < typename BasicJsonType, typename T, std::size_t... Idx >
 std::array<T, sizeof...(Idx)> from_json_inplace_array_impl(BasicJsonType&& j,
-        identity_tag<std::array<T, sizeof...(Idx) >> /*unused*/, index_sequence<Idx...> /*unused*/)
+        identity_tag<std::array<T, sizeof...(Idx)>> /*unused*/, index_sequence<Idx...> /*unused*/)
 {
     return { { std::forward<BasicJsonType>(j).at(Idx).template get<T>()... } };
 }
 
 template < typename BasicJsonType, typename T, std::size_t N >
-auto from_json(BasicJsonType&& j, identity_tag<std::array<T, N >> tag)
+auto from_json(BasicJsonType&& j, identity_tag<std::array<T, N>> tag)
 -> decltype(from_json_inplace_array_impl(std::forward<BasicJsonType>(j), tag, make_index_sequence<N> {}))
 {
     if (JSON_HEDLEY_UNLIKELY(!j.is_array()))
@@ -5007,7 +5007,7 @@ std::tuple<Args...> from_json_tuple_impl_base(BasicJsonType&& j, index_sequence<
 }
 
 template < typename BasicJsonType, class A1, class A2 >
-std::pair<A1, A2> from_json_tuple_impl(BasicJsonType&& j, identity_tag<std::pair<A1, A2 >> /*unused*/, priority_tag<0> /*unused*/)
+std::pair<A1, A2> from_json_tuple_impl(BasicJsonType&& j, identity_tag<std::pair<A1, A2>> /*unused*/, priority_tag<0> /*unused*/)
 {
     return {std::forward<BasicJsonType>(j).at(0).template get<A1>(),
             std::forward<BasicJsonType>(j).at(1).template get<A2>()};
@@ -5016,11 +5016,11 @@ std::pair<A1, A2> from_json_tuple_impl(BasicJsonType&& j, identity_tag<std::pair
 template<typename BasicJsonType, typename A1, typename A2>
 inline void from_json_tuple_impl(BasicJsonType&& j, std::pair<A1, A2>& p, priority_tag<1> /*unused*/)
 {
-    p = from_json_tuple_impl(std::forward<BasicJsonType>(j), identity_tag<std::pair<A1, A2 >> {}, priority_tag<0> {});
+    p = from_json_tuple_impl(std::forward<BasicJsonType>(j), identity_tag<std::pair<A1, A2>> {}, priority_tag<0> {});
 }
 
 template<typename BasicJsonType, typename... Args>
-std::tuple<Args...> from_json_tuple_impl(BasicJsonType&& j, identity_tag<std::tuple<Args... >> /*unused*/, priority_tag<2> /*unused*/)
+std::tuple<Args...> from_json_tuple_impl(BasicJsonType&& j, identity_tag<std::tuple<Args...>> /*unused*/, priority_tag<2> /*unused*/)
 {
     return from_json_tuple_impl_base<BasicJsonType, Args...>(std::forward<BasicJsonType>(j), index_sequence_for<Args...> {});
 }
@@ -5190,7 +5190,7 @@ template<typename IteratorType> class iteration_proxy_value
     using pointer = value_type *;
     using reference = value_type &;
     using iterator_category = std::input_iterator_tag;
-    using string_type = typename std::remove_cv< typename std::remove_reference<decltype(std::declval<IteratorType>().key() ) >::type >::type;
+    using string_type = typename std::remove_cv< typename std::remove_reference<decltype( std::declval<IteratorType>().key() ) >::type >::type;
 
   private:
     /// the iterator
@@ -5368,7 +5368,7 @@ namespace std
     #pragma clang diagnostic ignored "-Wmismatched-tags"
 #endif
 template<typename IteratorType>
-class tuple_size<::nlohmann::detail::iteration_proxy_value<IteratorType >> // NOLINT(cert-dcl58-cpp)
+class tuple_size<::nlohmann::detail::iteration_proxy_value<IteratorType>> // NOLINT(cert-dcl58-cpp)
             : public std::integral_constant<std::size_t, 2> {};
 
 template<std::size_t N, typename IteratorType>
@@ -5387,7 +5387,7 @@ class tuple_element<N, ::nlohmann::detail::iteration_proxy_value<IteratorType >>
 
 #if JSON_HAS_RANGES
     template <typename IteratorType>
-    inline constexpr bool ::std::ranges::enable_borrowed_range<::nlohmann::detail::iteration_proxy<IteratorType >> = true;
+    inline constexpr bool ::std::ranges::enable_borrowed_range<::nlohmann::detail::iteration_proxy<IteratorType>> = true;
 #endif
 
 // #include <nlohmann/detail/macro_scope.hpp>
@@ -5758,7 +5758,7 @@ template <
     enable_if_t < !std::is_constructible<typename BasicJsonType::string_t,
                   const T(&)[N]>::value, // NOLINT(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays,modernize-avoid-c-arrays)
                   int > = 0 >
-inline void to_json(BasicJsonType& j, const T(&arr)[N])  // NOLINT(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays,modernize-avoid-c-arrays)
+inline void to_json(BasicJsonType& j, const T(&arr)[N]) // NOLINT(cppcoreguidelines-avoid-c-arrays,hicpp-avoid-c-arrays,modernize-avoid-c-arrays)
 {
     external_constructor<value_t::array>::construct(j, arr);
 }
@@ -5771,7 +5771,7 @@ inline void to_json(BasicJsonType& j, const std::pair<T1, T2>& p)
 
 // for https://github.com/nlohmann/json/pull/1134
 template<typename BasicJsonType, typename T,
-         enable_if_t<std::is_same<T, iteration_proxy_value<typename BasicJsonType::iterator >>::value, int> = 0>
+         enable_if_t<std::is_same<T, iteration_proxy_value<typename BasicJsonType::iterator>>::value, int> = 0>
 inline void to_json(BasicJsonType& j, const T& b)
 {
     j = { {b.key(), b.value()} };
@@ -6504,7 +6504,7 @@ struct is_iterator_of_multibyte
 };
 
 template<typename IteratorType>
-struct iterator_input_adapter_factory<IteratorType, enable_if_t<is_iterator_of_multibyte<IteratorType>::value >>
+struct iterator_input_adapter_factory<IteratorType, enable_if_t<is_iterator_of_multibyte<IteratorType>::value>>
 {
     using iterator_type = IteratorType;
     using char_type = typename std::iterator_traits<iterator_type>::value_type;
@@ -6540,7 +6540,7 @@ struct container_input_adapter_factory {};
 
 template<typename ContainerType>
 struct container_input_adapter_factory< ContainerType,
-       void_t<decltype(begin(std::declval<ContainerType>()), end(std::declval<ContainerType>())) >>
+       void_t<decltype(begin(std::declval<ContainerType>()), end(std::declval<ContainerType>()))>>
        {
            using adapter_type = decltype(input_adapter(begin(std::declval<ContainerType>()), end(std::declval<ContainerType>())));
 
@@ -6807,7 +6807,7 @@ class lexer : public lexer_base<BasicJsonType>
     {
         const auto* loc = localeconv();
         JSON_ASSERT(loc != nullptr);
-        return (loc->decimal_point == nullptr) ? '.' : * (loc->decimal_point);
+        return (loc->decimal_point == nullptr) ? '.' : *(loc->decimal_point);
     }
 
     /////////////////////
@@ -14082,7 +14082,7 @@ class json_pointer
 
     /// @brief create a new JSON pointer by appending the unescaped token at the end of the JSON pointer
     /// @sa https://json.nlohmann.me/api/json_pointer/operator_slash/
-    friend json_pointer operator/(const json_pointer& lhs, string_t token)  // NOLINT(performance-unnecessary-value-param)
+    friend json_pointer operator/(const json_pointer& lhs, string_t token) // NOLINT(performance-unnecessary-value-param)
     {
         return json_pointer(lhs) /= std::move(token);
     }
@@ -15105,10 +15105,10 @@ template<typename CharType> struct output_adapter_protocol
 
 /// a type to simplify interfaces
 template<typename CharType>
-using output_adapter_t = std::shared_ptr<output_adapter_protocol<CharType >>;
+using output_adapter_t = std::shared_ptr<output_adapter_protocol<CharType>>;
 
 /// output adapter for byte vectors
-template<typename CharType, typename AllocatorType = std::allocator<CharType >>
+template<typename CharType, typename AllocatorType = std::allocator<CharType>>
 class output_vector_adapter : public output_adapter_protocol<CharType>
 {
   public:
@@ -15158,7 +15158,7 @@ class output_stream_adapter : public output_adapter_protocol<CharType>
 #endif  // JSON_NO_IO
 
 /// output adapter for basic_string
-template<typename CharType, typename StringType = std::basic_string<CharType >>
+template<typename CharType, typename StringType = std::basic_string<CharType>>
 class output_string_adapter : public output_adapter_protocol<CharType>
 {
   public:
@@ -15181,21 +15181,21 @@ class output_string_adapter : public output_adapter_protocol<CharType>
     StringType& str;
 };
 
-template<typename CharType, typename StringType = std::basic_string<CharType >>
+template<typename CharType, typename StringType = std::basic_string<CharType>>
 class output_adapter
 {
   public:
-    template<typename AllocatorType = std::allocator<CharType >>
+    template<typename AllocatorType = std::allocator<CharType>>
     output_adapter(std::vector<CharType, AllocatorType>& vec)
-        : oa(std::make_shared<output_vector_adapter<CharType, AllocatorType >> (vec)) {}
+        : oa(std::make_shared<output_vector_adapter<CharType, AllocatorType>>(vec)) {}
 
 #ifndef JSON_NO_IO
     output_adapter(std::basic_ostream<CharType>& s)
-        : oa(std::make_shared<output_stream_adapter<CharType >> (s)) {}
+        : oa(std::make_shared<output_stream_adapter<CharType>>(s)) {}
 #endif  // JSON_NO_IO
 
     output_adapter(StringType& s)
-        : oa(std::make_shared<output_string_adapter<CharType, StringType >> (s)) {}
+        : oa(std::make_shared<output_string_adapter<CharType, StringType>>(s)) {}
 
     operator output_adapter_t<CharType>()
     {
@@ -17442,43 +17442,43 @@ inline cached_power get_cached_power_for_binary_exponent(int e)
             { 0xAB70FE17C79AC6CA, -1060, -300 },
             { 0xFF77B1FCBEBCDC4F, -1034, -292 },
             { 0xBE5691EF416BD60C, -1007, -284 },
-            { 0x8DD01FAD907FFC3C, -980, -276 },
-            { 0xD3515C2831559A83, -954, -268 },
-            { 0x9D71AC8FADA6C9B5, -927, -260 },
-            { 0xEA9C227723EE8BCB, -901, -252 },
-            { 0xAECC49914078536D, -874, -244 },
-            { 0x823C12795DB6CE57, -847, -236 },
-            { 0xC21094364DFB5637, -821, -228 },
-            { 0x9096EA6F3848984F, -794, -220 },
-            { 0xD77485CB25823AC7, -768, -212 },
-            { 0xA086CFCD97BF97F4, -741, -204 },
-            { 0xEF340A98172AACE5, -715, -196 },
-            { 0xB23867FB2A35B28E, -688, -188 },
-            { 0x84C8D4DFD2C63F3B, -661, -180 },
-            { 0xC5DD44271AD3CDBA, -635, -172 },
-            { 0x936B9FCEBB25C996, -608, -164 },
-            { 0xDBAC6C247D62A584, -582, -156 },
-            { 0xA3AB66580D5FDAF6, -555, -148 },
-            { 0xF3E2F893DEC3F126, -529, -140 },
-            { 0xB5B5ADA8AAFF80B8, -502, -132 },
-            { 0x87625F056C7C4A8B, -475, -124 },
-            { 0xC9BCFF6034C13053, -449, -116 },
-            { 0x964E858C91BA2655, -422, -108 },
-            { 0xDFF9772470297EBD, -396, -100 },
-            { 0xA6DFBD9FB8E5B88F, -369, -92 },
-            { 0xF8A95FCF88747D94, -343, -84 },
-            { 0xB94470938FA89BCF, -316, -76 },
-            { 0x8A08F0F8BF0F156B, -289, -68 },
-            { 0xCDB02555653131B6, -263, -60 },
-            { 0x993FE2C6D07B7FAC, -236, -52 },
-            { 0xE45C10C42A2B3B06, -210, -44 },
-            { 0xAA242499697392D3, -183, -36 },
-            { 0xFD87B5F28300CA0E, -157, -28 },
-            { 0xBCE5086492111AEB, -130, -20 },
-            { 0x8CBCCC096F5088CC, -103, -12 },
-            { 0xD1B71758E219652C, -77, -4 },
-            { 0x9C40000000000000, -50,    4 },
-            { 0xE8D4A51000000000, -24,   12 },
+            { 0x8DD01FAD907FFC3C,  -980, -276 },
+            { 0xD3515C2831559A83,  -954, -268 },
+            { 0x9D71AC8FADA6C9B5,  -927, -260 },
+            { 0xEA9C227723EE8BCB,  -901, -252 },
+            { 0xAECC49914078536D,  -874, -244 },
+            { 0x823C12795DB6CE57,  -847, -236 },
+            { 0xC21094364DFB5637,  -821, -228 },
+            { 0x9096EA6F3848984F,  -794, -220 },
+            { 0xD77485CB25823AC7,  -768, -212 },
+            { 0xA086CFCD97BF97F4,  -741, -204 },
+            { 0xEF340A98172AACE5,  -715, -196 },
+            { 0xB23867FB2A35B28E,  -688, -188 },
+            { 0x84C8D4DFD2C63F3B,  -661, -180 },
+            { 0xC5DD44271AD3CDBA,  -635, -172 },
+            { 0x936B9FCEBB25C996,  -608, -164 },
+            { 0xDBAC6C247D62A584,  -582, -156 },
+            { 0xA3AB66580D5FDAF6,  -555, -148 },
+            { 0xF3E2F893DEC3F126,  -529, -140 },
+            { 0xB5B5ADA8AAFF80B8,  -502, -132 },
+            { 0x87625F056C7C4A8B,  -475, -124 },
+            { 0xC9BCFF6034C13053,  -449, -116 },
+            { 0x964E858C91BA2655,  -422, -108 },
+            { 0xDFF9772470297EBD,  -396, -100 },
+            { 0xA6DFBD9FB8E5B88F,  -369,  -92 },
+            { 0xF8A95FCF88747D94,  -343,  -84 },
+            { 0xB94470938FA89BCF,  -316,  -76 },
+            { 0x8A08F0F8BF0F156B,  -289,  -68 },
+            { 0xCDB02555653131B6,  -263,  -60 },
+            { 0x993FE2C6D07B7FAC,  -236,  -52 },
+            { 0xE45C10C42A2B3B06,  -210,  -44 },
+            { 0xAA242499697392D3,  -183,  -36 },
+            { 0xFD87B5F28300CA0E,  -157,  -28 },
+            { 0xBCE5086492111AEB,  -130,  -20 },
+            { 0x8CBCCC096F5088CC,  -103,  -12 },
+            { 0xD1B71758E219652C,   -77,   -4 },
+            { 0x9C40000000000000,   -50,    4 },
+            { 0xE8D4A51000000000,   -24,   12 },
             { 0xAD78EBC5AC620000,     3,   20 },
             { 0x813F3978F8940984,    30,   28 },
             { 0xC097CE7BC90715B3,    56,   36 },
@@ -19178,7 +19178,7 @@ NLOHMANN_JSON_NAMESPACE_BEGIN
 /// ordered_map: a minimal map-like container that preserves insertion order
 /// for use within nlohmann::basic_json<ordered_map>
 template <class Key, class T, class IgnoredLess = std::less<Key>,
-          class Allocator = std::allocator<std::pair<const Key, T >>>
+          class Allocator = std::allocator<std::pair<const Key, T>>>
                   struct ordered_map : std::vector<std::pair<const Key, T>, Allocator>
 {
     using key_type = Key;
@@ -19496,7 +19496,7 @@ template <class Key, class T, class IgnoredLess = std::less<Key>,
     using require_input_iter = typename std::enable_if<std::is_convertible<typename std::iterator_traits<InputIt>::iterator_category,
             std::input_iterator_tag>::value>::type;
 
-    template<typename InputIt, typename = require_input_iter<InputIt >>
+    template<typename InputIt, typename = require_input_iter<InputIt>>
     void insert(InputIt first, InputIt last)
     {
         for (auto it = first; it != last; ++it)
@@ -23024,7 +23024,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
 
     /// @brief exchanges the values
     /// @sa https://json.nlohmann.me/api/basic_json/swap/
-    void swap(typename binary_t::container_type& other)  // NOLINT(bugprone-exception-escape)
+    void swap(typename binary_t::container_type& other) // NOLINT(bugprone-exception-escape)
     {
         // swap only works for strings
         if (JSON_HEDLEY_LIKELY(is_binary()))
@@ -24704,7 +24704,7 @@ struct less< ::nlohmann::detail::value_t> // do not remove the space after '<', 
 /// @brief exchanges the values of two JSON objects
 /// @sa https://json.nlohmann.me/api/basic_json/std_swap/
 NLOHMANN_BASIC_JSON_TPL_DECLARATION
-inline void swap(nlohmann::NLOHMANN_BASIC_JSON_TPL& j1, nlohmann::NLOHMANN_BASIC_JSON_TPL& j2) noexcept(   // NOLINT(readability-inconsistent-declaration-parameter-name, cert-dcl58-cpp)
+inline void swap(nlohmann::NLOHMANN_BASIC_JSON_TPL& j1, nlohmann::NLOHMANN_BASIC_JSON_TPL& j2) noexcept(  // NOLINT(readability-inconsistent-declaration-parameter-name, cert-dcl58-cpp)
     is_nothrow_move_constructible<nlohmann::NLOHMANN_BASIC_JSON_TPL>::value&&                          // NOLINT(misc-redundant-expression,cppcoreguidelines-noexcept-swap,performance-noexcept-swap)
     is_nothrow_move_assignable<nlohmann::NLOHMANN_BASIC_JSON_TPL>::value)
 {
