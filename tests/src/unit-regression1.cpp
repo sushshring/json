@@ -85,7 +85,7 @@ struct foo_serializer < T, typename std::enable_if < !std::is_same<foo, T>::valu
 } // namespace ns
 
 using foo_json = nlohmann::basic_json<std::map, std::vector, std::string, bool, std::int64_t,
-      std::uint64_t, double, std::allocator, ns::foo_serializer, std::vector<std::uint8_t >>;
+      std::uint64_t, double, std::allocator, ns::foo_serializer, std::vector<std::uint8_t>>;
 
 /////////////////////////////////////////////////////////////////////
 // for #805
@@ -98,8 +98,8 @@ struct nocopy // NOLINT(cppcoreguidelines-special-member-functions,hicpp-special
     nocopy() = default;
     nocopy(const nocopy&) = delete;
     nocopy(nocopy&&) = delete;
-    nocopy& operator = (const nocopy&) = delete;
-    nocopy& operator = (nocopy&&) = delete;
+    nocopy& operator=(const nocopy&) = delete;
+    nocopy& operator=(nocopy&&) = delete;
 
     int val = 0;
 
@@ -1296,7 +1296,7 @@ TEST_CASE("regression tests 1")
                 CHECK(v[i] == j[i]);
             }
 
-            CHECK_THROWS_WITH_AS(json().get<std::valarray<double >> (), "[json.exception.type_error.302] type must be array, but is null", json::type_error&);
+            CHECK_THROWS_WITH_AS(json().get<std::valarray<double>>(), "[json.exception.type_error.302] type must be array, but is null", json::type_error&);
         }
     }
 #endif
@@ -1305,7 +1305,7 @@ TEST_CASE("regression tests 1")
     {
         SECTION("example 1")
         {
-            std::istringstream i1_2_3(R"({"first": "one" }{"second": "two"}3)" );
+            std::istringstream i1_2_3( R"({"first": "one" }{"second": "two"}3)" );
             json j1;
             json j2;
             json j3;
@@ -1313,8 +1313,8 @@ TEST_CASE("regression tests 1")
             i1_2_3 >> j2;
             i1_2_3 >> j3;
 
-            auto m1 = j1.get<std::map<std::string, std::string >> ();
-            auto m2 = j2.get<std::map<std::string, std::string >> ();
+            auto m1 = j1.get<std::map<std::string, std::string>>();
+            auto m2 = j2.get<std::map<std::string, std::string>>();
             int i3{j3};
 
             CHECK( m1 == ( std::map<std::string, std::string> {{ "first",  "one" }} ));

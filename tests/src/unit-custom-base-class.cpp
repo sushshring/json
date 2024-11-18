@@ -71,7 +71,7 @@ TEST_CASE("JSON Node Metadata")
     }
     SECTION("type vector<int>")
     {
-        using json = json_with_metadata<std::vector<int >>;
+        using json = json_with_metadata<std::vector<int>>;
         json value;
         value.metadata().emplace_back(1);
         auto copy = value;
@@ -85,7 +85,7 @@ TEST_CASE("JSON Node Metadata")
     }
     SECTION("copy ctor")
     {
-        using json = json_with_metadata<std::vector<int >>;
+        using json = json_with_metadata<std::vector<int>>;
         json value;
         value.metadata().emplace_back(1);
         value.metadata().emplace_back(2);
@@ -105,7 +105,7 @@ TEST_CASE("JSON Node Metadata")
     }
     SECTION("move ctor")
     {
-        using json = json_with_metadata<std::vector<int >>;
+        using json = json_with_metadata<std::vector<int>>;
         json value;
         value.metadata().emplace_back(1);
         value.metadata().emplace_back(2);
@@ -118,7 +118,7 @@ TEST_CASE("JSON Node Metadata")
     }
     SECTION("move assign")
     {
-        using json = json_with_metadata<std::vector<int >>;
+        using json = json_with_metadata<std::vector<int>>;
         json value;
         value.metadata().emplace_back(1);
         value.metadata().emplace_back(2);
@@ -132,7 +132,7 @@ TEST_CASE("JSON Node Metadata")
     }
     SECTION("copy assign")
     {
-        using json = json_with_metadata<std::vector<int >>;
+        using json = json_with_metadata<std::vector<int>>;
         json value;
         value.metadata().emplace_back(1);
         value.metadata().emplace_back(2);
@@ -153,7 +153,7 @@ TEST_CASE("JSON Node Metadata")
     }
     SECTION("type unique_ptr<int>")
     {
-        using json = json_with_metadata<std::unique_ptr<int >>;
+        using json = json_with_metadata<std::unique_ptr<int>>;
         json value;
         value.metadata().reset(new int(42)); // NOLINT(cppcoreguidelines-owning-memory)
         auto moved = std::move(value);
@@ -163,7 +163,7 @@ TEST_CASE("JSON Node Metadata")
     }
     SECTION("type vector<int> in json array")
     {
-        using json = json_with_metadata<std::vector<int >>;
+        using json = json_with_metadata<std::vector<int>>;
         json value;
         value.metadata().emplace_back(1);
         value.metadata().emplace_back(2);

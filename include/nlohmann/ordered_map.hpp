@@ -25,7 +25,7 @@ NLOHMANN_JSON_NAMESPACE_BEGIN
 /// ordered_map: a minimal map-like container that preserves insertion order
 /// for use within nlohmann::basic_json<ordered_map>
 template <class Key, class T, class IgnoredLess = std::less<Key>,
-          class Allocator = std::allocator<std::pair<const Key, T >>>
+          class Allocator = std::allocator<std::pair<const Key, T>>>
                   struct ordered_map : std::vector<std::pair<const Key, T>, Allocator>
 {
     using key_type = Key;
@@ -343,7 +343,7 @@ template <class Key, class T, class IgnoredLess = std::less<Key>,
     using require_input_iter = typename std::enable_if<std::is_convertible<typename std::iterator_traits<InputIt>::iterator_category,
             std::input_iterator_tag>::value>::type;
 
-    template<typename InputIt, typename = require_input_iter<InputIt >>
+    template<typename InputIt, typename = require_input_iter<InputIt>>
     void insert(InputIt first, InputIt last)
     {
         for (auto it = first; it != last; ++it)

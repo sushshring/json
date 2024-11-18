@@ -298,8 +298,8 @@ TEST_CASE("compliance tests from nativejson-benchmark")
         {
             CAPTURE(filename)
             std::ifstream f(filename);
-            std::string json_string((std::istreambuf_iterator<char>(f) ),
-                                    (std::istreambuf_iterator<char>()) );
+            std::string json_string( (std::istreambuf_iterator<char>(f) ),
+                                     (std::istreambuf_iterator<char>()) );
 
             CAPTURE(json_string)
             const json j = json::parse(json_string);

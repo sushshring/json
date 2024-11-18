@@ -362,7 +362,7 @@ struct is_iterator_of_multibyte
 };
 
 template<typename IteratorType>
-struct iterator_input_adapter_factory<IteratorType, enable_if_t<is_iterator_of_multibyte<IteratorType>::value >>
+struct iterator_input_adapter_factory<IteratorType, enable_if_t<is_iterator_of_multibyte<IteratorType>::value>>
 {
     using iterator_type = IteratorType;
     using char_type = typename std::iterator_traits<iterator_type>::value_type;
@@ -398,7 +398,7 @@ struct container_input_adapter_factory {};
 
 template<typename ContainerType>
 struct container_input_adapter_factory< ContainerType,
-       void_t<decltype(begin(std::declval<ContainerType>()), end(std::declval<ContainerType>())) >>
+       void_t<decltype(begin(std::declval<ContainerType>()), end(std::declval<ContainerType>()))>>
        {
            using adapter_type = decltype(input_adapter(begin(std::declval<ContainerType>()), end(std::declval<ContainerType>())));
 

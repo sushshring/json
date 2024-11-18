@@ -59,14 +59,14 @@ TEST_CASE("iterators 2")
             // comparison: not equal
             {
                 // check definition
-                CHECK((it1 != it1) == !(it1 == it1) );
-                CHECK((it1 != it2) == !(it1 == it2) );
-                CHECK((it1 != it3) == !(it1 == it3) );
-                CHECK((it2 != it3) == !(it2 == it3) );
-                CHECK((it1_c != it1_c) == !(it1_c == it1_c) );
-                CHECK((it1_c != it2_c) == !(it1_c == it2_c) );
-                CHECK((it1_c != it3_c) == !(it1_c == it3_c) );
-                CHECK((it2_c != it3_c) == !(it2_c == it3_c) );
+                CHECK( (it1 != it1) == !(it1 == it1) );
+                CHECK( (it1 != it2) == !(it1 == it2) );
+                CHECK( (it1 != it3) == !(it1 == it3) );
+                CHECK( (it2 != it3) == !(it2 == it3) );
+                CHECK( (it1_c != it1_c) == !(it1_c == it1_c) );
+                CHECK( (it1_c != it2_c) == !(it1_c == it2_c) );
+                CHECK( (it1_c != it3_c) == !(it1_c == it3_c) );
+                CHECK( (it2_c != it3_c) == !(it2_c == it3_c) );
             }
 
             // comparison: smaller
@@ -133,14 +133,14 @@ TEST_CASE("iterators 2")
                 else
                 {
                     // check definition
-                    CHECK((it1 <= it1) == !(it1 < it1) );
-                    CHECK((it1 <= it2) == !(it2 < it1) );
-                    CHECK((it1 <= it3) == !(it3 < it1) );
-                    CHECK((it2 <= it3) == !(it3 < it2) );
-                    CHECK((it1_c <= it1_c) == !(it1_c < it1_c) );
-                    CHECK((it1_c <= it2_c) == !(it2_c < it1_c) );
-                    CHECK((it1_c <= it3_c) == !(it3_c < it1_c) );
-                    CHECK((it2_c <= it3_c) == !(it3_c < it2_c) );
+                    CHECK( (it1 <= it1) == !(it1 < it1) );
+                    CHECK( (it1 <= it2) == !(it2 < it1) );
+                    CHECK( (it1 <= it3) == !(it3 < it1) );
+                    CHECK( (it2 <= it3) == !(it3 < it2) );
+                    CHECK( (it1_c <= it1_c) == !(it1_c < it1_c) );
+                    CHECK( (it1_c <= it2_c) == !(it2_c < it1_c) );
+                    CHECK( (it1_c <= it3_c) == !(it3_c < it1_c) );
+                    CHECK( (it2_c <= it3_c) == !(it3_c < it2_c) );
                 }
             }
 
@@ -171,14 +171,14 @@ TEST_CASE("iterators 2")
                 else
                 {
                     // check definition
-                    CHECK((it1 > it1) == (it1 < it1) );
-                    CHECK((it1 > it2) == (it2 < it1) );
-                    CHECK((it1 > it3) == (it3 < it1) );
-                    CHECK((it2 > it3) == (it3 < it2) );
-                    CHECK((it1_c > it1_c) == (it1_c < it1_c) );
-                    CHECK((it1_c > it2_c) == (it2_c < it1_c) );
-                    CHECK((it1_c > it3_c) == (it3_c < it1_c) );
-                    CHECK((it2_c > it3_c) == (it3_c < it2_c) );
+                    CHECK( (it1 > it1) == (it1 < it1) );
+                    CHECK( (it1 > it2) == (it2 < it1) );
+                    CHECK( (it1 > it3) == (it3 < it1) );
+                    CHECK( (it2 > it3) == (it3 < it2) );
+                    CHECK( (it1_c > it1_c) == (it1_c < it1_c) );
+                    CHECK( (it1_c > it2_c) == (it2_c < it1_c) );
+                    CHECK( (it1_c > it3_c) == (it3_c < it1_c) );
+                    CHECK( (it2_c > it3_c) == (it3_c < it2_c) );
                 }
             }
 
@@ -209,14 +209,14 @@ TEST_CASE("iterators 2")
                 else
                 {
                     // check definition
-                    CHECK((it1 >= it1) == !(it1 < it1) );
-                    CHECK((it1 >= it2) == !(it1 < it2) );
-                    CHECK((it1 >= it3) == !(it1 < it3) );
-                    CHECK((it2 >= it3) == !(it2 < it3) );
-                    CHECK((it1_c >= it1_c) == !(it1_c < it1_c) );
-                    CHECK((it1_c >= it2_c) == !(it1_c < it2_c) );
-                    CHECK((it1_c >= it3_c) == !(it1_c < it3_c) );
-                    CHECK((it2_c >= it3_c) == !(it2_c < it3_c) );
+                    CHECK( (it1 >= it1) == !(it1 < it1) );
+                    CHECK( (it1 >= it2) == !(it1 < it2) );
+                    CHECK( (it1 >= it3) == !(it1 < it3) );
+                    CHECK( (it2 >= it3) == !(it2 < it3) );
+                    CHECK( (it1_c >= it1_c) == !(it1_c < it1_c) );
+                    CHECK( (it1_c >= it2_c) == !(it1_c < it2_c) );
+                    CHECK( (it1_c >= it3_c) == !(it1_c < it3_c) );
+                    CHECK( (it2_c >= it3_c) == !(it2_c < it3_c) );
                 }
             }
         }
@@ -483,14 +483,14 @@ TEST_CASE("iterators 2")
             // comparison: not equal
             {
                 // check definition
-                CHECK((it1 != it1) == !(it1 == it1) );
-                CHECK((it1 != it2) == !(it1 == it2) );
-                CHECK((it1 != it3) == !(it1 == it3) );
-                CHECK((it2 != it3) == !(it2 == it3) );
-                CHECK((it1_c != it1_c) == !(it1_c == it1_c) );
-                CHECK((it1_c != it2_c) == !(it1_c == it2_c) );
-                CHECK((it1_c != it3_c) == !(it1_c == it3_c) );
-                CHECK((it2_c != it3_c) == !(it2_c == it3_c) );
+                CHECK( (it1 != it1) == !(it1 == it1) );
+                CHECK( (it1 != it2) == !(it1 == it2) );
+                CHECK( (it1 != it3) == !(it1 == it3) );
+                CHECK( (it2 != it3) == !(it2 == it3) );
+                CHECK( (it1_c != it1_c) == !(it1_c == it1_c) );
+                CHECK( (it1_c != it2_c) == !(it1_c == it2_c) );
+                CHECK( (it1_c != it3_c) == !(it1_c == it3_c) );
+                CHECK( (it2_c != it3_c) == !(it2_c == it3_c) );
             }
 
             // comparison: smaller
@@ -557,14 +557,14 @@ TEST_CASE("iterators 2")
                 else
                 {
                     // check definition
-                    CHECK((it1 <= it1) == !(it1 < it1) );
-                    CHECK((it1 <= it2) == !(it2 < it1) );
-                    CHECK((it1 <= it3) == !(it3 < it1) );
-                    CHECK((it2 <= it3) == !(it3 < it2) );
-                    CHECK((it1_c <= it1_c) == !(it1_c < it1_c) );
-                    CHECK((it1_c <= it2_c) == !(it2_c < it1_c) );
-                    CHECK((it1_c <= it3_c) == !(it3_c < it1_c) );
-                    CHECK((it2_c <= it3_c) == !(it3_c < it2_c) );
+                    CHECK( (it1 <= it1) == !(it1 < it1) );
+                    CHECK( (it1 <= it2) == !(it2 < it1) );
+                    CHECK( (it1 <= it3) == !(it3 < it1) );
+                    CHECK( (it2 <= it3) == !(it3 < it2) );
+                    CHECK( (it1_c <= it1_c) == !(it1_c < it1_c) );
+                    CHECK( (it1_c <= it2_c) == !(it2_c < it1_c) );
+                    CHECK( (it1_c <= it3_c) == !(it3_c < it1_c) );
+                    CHECK( (it2_c <= it3_c) == !(it3_c < it2_c) );
                 }
             }
 
@@ -595,14 +595,14 @@ TEST_CASE("iterators 2")
                 else
                 {
                     // check definition
-                    CHECK((it1 > it1) == (it1 < it1) );
-                    CHECK((it1 > it2) == (it2 < it1) );
-                    CHECK((it1 > it3) == (it3 < it1) );
-                    CHECK((it2 > it3) == (it3 < it2) );
-                    CHECK((it1_c > it1_c) == (it1_c < it1_c) );
-                    CHECK((it1_c > it2_c) == (it2_c < it1_c) );
-                    CHECK((it1_c > it3_c) == (it3_c < it1_c) );
-                    CHECK((it2_c > it3_c) == (it3_c < it2_c) );
+                    CHECK( (it1 > it1) == (it1 < it1) );
+                    CHECK( (it1 > it2) == (it2 < it1) );
+                    CHECK( (it1 > it3) == (it3 < it1) );
+                    CHECK( (it2 > it3) == (it3 < it2) );
+                    CHECK( (it1_c > it1_c) == (it1_c < it1_c) );
+                    CHECK( (it1_c > it2_c) == (it2_c < it1_c) );
+                    CHECK( (it1_c > it3_c) == (it3_c < it1_c) );
+                    CHECK( (it2_c > it3_c) == (it3_c < it2_c) );
                 }
             }
 
@@ -633,14 +633,14 @@ TEST_CASE("iterators 2")
                 else
                 {
                     // check definition
-                    CHECK((it1 >= it1) == !(it1 < it1) );
-                    CHECK((it1 >= it2) == !(it1 < it2) );
-                    CHECK((it1 >= it3) == !(it1 < it3) );
-                    CHECK((it2 >= it3) == !(it2 < it3) );
-                    CHECK((it1_c >= it1_c) == !(it1_c < it1_c) );
-                    CHECK((it1_c >= it2_c) == !(it1_c < it2_c) );
-                    CHECK((it1_c >= it3_c) == !(it1_c < it3_c) );
-                    CHECK((it2_c >= it3_c) == !(it2_c < it3_c) );
+                    CHECK( (it1 >= it1) == !(it1 < it1) );
+                    CHECK( (it1 >= it2) == !(it1 < it2) );
+                    CHECK( (it1 >= it3) == !(it1 < it3) );
+                    CHECK( (it2 >= it3) == !(it2 < it3) );
+                    CHECK( (it1_c >= it1_c) == !(it1_c < it1_c) );
+                    CHECK( (it1_c >= it2_c) == !(it1_c < it2_c) );
+                    CHECK( (it1_c >= it3_c) == !(it1_c < it3_c) );
+                    CHECK( (it2_c >= it3_c) == !(it2_c < it3_c) );
                 }
             }
         }
@@ -881,15 +881,15 @@ TEST_CASE("iterators 2")
         {
             using nlohmann::detail::iteration_proxy_value;
             CHECK(std::bidirectional_iterator<json::iterator>);
-            CHECK(std::input_iterator<iteration_proxy_value<json::iterator >> );
+            CHECK(std::input_iterator<iteration_proxy_value<json::iterator>>);
 
-            CHECK(std::is_same<json::iterator, std::ranges::iterator_t<json >>::value);
+            CHECK(std::is_same<json::iterator, std::ranges::iterator_t<json>>::value);
             CHECK(std::ranges::bidirectional_range<json>);
 
             using nlohmann::detail::iteration_proxy;
             using items_type = decltype(std::declval<json&>().items());
-            CHECK(std::is_same<items_type, iteration_proxy<json::iterator >>::value);
-            CHECK(std::is_same<iteration_proxy_value<json::iterator>, std::ranges::iterator_t<items_type >>::value);
+            CHECK(std::is_same<items_type, iteration_proxy<json::iterator>>::value);
+            CHECK(std::is_same<iteration_proxy_value<json::iterator>, std::ranges::iterator_t<items_type>>::value);
             CHECK(std::ranges::input_range<items_type>);
         }
 

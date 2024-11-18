@@ -54,7 +54,7 @@ namespace
 {
 // helper function to check std::less<json::value_t>
 // see https://en.cppreference.com/w/cpp/utility/functional/less
-template <typename A, typename B, typename U = std::less<json::value_t >>
+template <typename A, typename B, typename U = std::less<json::value_t>>
 bool f(A a, B b, U u = U())
 {
     return u(a, b);
@@ -100,7 +100,7 @@ TEST_CASE("lexicographical comparison operators")
             json::value_t::discarded
         };
 
-        std::vector<std::vector<bool >> expected_lt =
+        std::vector<std::vector<bool>> expected_lt =
         {
             //0   1   2   3   4   5   6   7   8   9
             {f_, _t, _t, _t, _t, _t, _t, _t, _t, f_}, //  0
@@ -140,7 +140,7 @@ TEST_CASE("lexicographical comparison operators")
         // JSON_HAS_CPP_20 (do not remove; see note at top of file)
         SECTION("comparison: 3-way")
         {
-            std::vector<std::vector<std::partial_ordering >> expected =
+            std::vector<std::vector<std::partial_ordering>> expected =
             {
                 //0   1   2   3   4   5   6   7   8   9
                 {eq, lt, lt, lt, lt, lt, lt, lt, lt, un}, //  0
@@ -201,7 +201,7 @@ TEST_CASE("lexicographical comparison operators")
             json(json::value_t::discarded), json(json::value_t::discarded) // 20 21
         };
 
-        std::vector<std::vector<bool >> expected_eq =
+        std::vector<std::vector<bool>> expected_eq =
         {
             //0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18  19  20  21
             {_t, _t, f_, f_, f_, f_, f_, f_, f_, f_, f_, f_, f_, f_, f_, f_, f_, f_, f_, f_, f_, f_}, //  0
@@ -228,7 +228,7 @@ TEST_CASE("lexicographical comparison operators")
             {f_, f_, f_, f_, f_, f_, f_, f_, f_, f_, f_, f_, f_, f_, f_, f_, f_, f_, f_, f_, f_, f_}, // 21
         };
 
-        std::vector<std::vector<bool >> expected_lt =
+        std::vector<std::vector<bool>> expected_lt =
         {
             //0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18  19  20  21
             {f_, f_, _t, _t, _t, _t, _t, _t, _t, _t, _t, _t, _t, _t, _t, _t, _t, _t, _t, _t, f_, f_}, //  0
@@ -257,7 +257,7 @@ TEST_CASE("lexicographical comparison operators")
 
         SECTION("compares unordered")
         {
-            std::vector<std::vector<bool >> expected =
+            std::vector<std::vector<bool>> expected =
             {
                 //0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18  19  20  21
                 {f_, f_, f_, f_, f_, f_, f_, f_, f_, f_, f_, f_, f_, f_, f_, f_, f_, f_, f_, f_, _t, _t}, //  0
@@ -301,7 +301,7 @@ TEST_CASE("lexicographical comparison operators")
 #if JSON_USE_LEGACY_DISCARDED_VALUE_COMPARISON
         SECTION("compares unordered (inverse)")
         {
-            std::vector<std::vector<bool >> expected =
+            std::vector<std::vector<bool>> expected =
             {
                 //0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18  19  20  21
                 {f_, f_, f_, f_, f_, f_, f_, f_, f_, f_, f_, f_, f_, f_, f_, f_, f_, f_, f_, f_, f_, f_}, //  0
@@ -496,7 +496,7 @@ TEST_CASE("lexicographical comparison operators")
         // JSON_HAS_CPP_20 (do not remove; see note at top of file)
         SECTION("comparison: 3-way")
         {
-            std::vector<std::vector<std::partial_ordering >> expected =
+            std::vector<std::vector<std::partial_ordering>> expected =
             {
                 //0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17  18  19  20  21
                 {eq, eq, lt, lt, lt, lt, lt, lt, lt, lt, lt, lt, lt, lt, lt, lt, lt, lt, lt, lt, un, un}, //  0

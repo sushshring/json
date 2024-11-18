@@ -28,8 +28,8 @@ int main()
     auto v4 = json_types["number"]["floating-point"].template get<float>();
     auto v5 = json_types["number"]["floating-point"].template get<int>();
     auto v6 = json_types["string"].template get<std::string>();
-    auto v7 = json_types["array"].template get<std::vector<short >> ();
-    auto v8 = json_types.template get<std::unordered_map<std::string, json >> ();
+    auto v7 = json_types["array"].template get<std::vector<short>>();
+    auto v8 = json_types.template get<std::unordered_map<std::string, json>>();
 
     // print the conversion results
     std::cout << v1 << '\n';

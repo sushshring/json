@@ -251,7 +251,7 @@ TEST_CASE("constructors")
         {
             json const j{1, 2.0, "string"};
 
-            const auto p = j.get<std::pair<int, float >> ();
+            const auto p = j.get<std::pair<int, float>>();
             CHECK(p.first == j[0]);
             CHECK(p.second == j[1]);
         }
@@ -275,7 +275,7 @@ TEST_CASE("constructors")
         {
             json const j{1, 2.0, "string", 42};
 
-            const auto t = j.get<std::tuple<int, float, std::string >> ();
+            const auto t = j.get<std::tuple<int, float, std::string>>();
             CHECK(std::get<0>(t) == j[0]);
             CHECK(std::get<1>(t) == j[1]);
             // CHECK(std::get<2>(t) == j[2]); // commented out due to CI issue, see https://github.com/nlohmann/json/pull/3985 and https://github.com/nlohmann/json/issues/4025
@@ -285,9 +285,9 @@ TEST_CASE("constructors")
         {
             json const j{1};
 
-            CHECK_THROWS_WITH_AS((j.get<std::pair<int, int >> ()), "[json.exception.out_of_range.401] array index 1 is out of range", json::out_of_range&);
-            CHECK_THROWS_WITH_AS((j.get<std::tuple<int, int >> ()), "[json.exception.out_of_range.401] array index 1 is out of range", json::out_of_range&);
-            CHECK_THROWS_WITH_AS((j.get<std::array<int, 3 >> ()), "[json.exception.out_of_range.401] array index 1 is out of range", json::out_of_range&);
+            CHECK_THROWS_WITH_AS((j.get<std::pair<int, int>>()), "[json.exception.out_of_range.401] array index 1 is out of range", json::out_of_range&);
+            CHECK_THROWS_WITH_AS((j.get<std::tuple<int, int>>()), "[json.exception.out_of_range.401] array index 1 is out of range", json::out_of_range&);
+            CHECK_THROWS_WITH_AS((j.get<std::array<int, 3>>()), "[json.exception.out_of_range.401] array index 1 is out of range", json::out_of_range&);
         }
 
         SECTION("std::forward_list<json>")
@@ -305,7 +305,7 @@ TEST_CASE("constructors")
             CHECK(j.type() == json::value_t::array);
             CHECK(j == j_reference);
 
-            const auto a2 = j.get<std::array<json, 6 >> ();
+            const auto a2 = j.get<std::array<json, 6>>();
             CHECK(a2 == a);
         }
 
@@ -316,7 +316,7 @@ TEST_CASE("constructors")
             CHECK(j.type() == json::value_t::array);
             CHECK(j == json({1, 2, 3, 4, 5}));
 
-            auto jva = j.get<std::valarray<int >> ();
+            auto jva = j.get<std::valarray<int>>();
             CHECK(jva.size() == va.size());
             for (size_t i = 0; i < jva.size(); ++i)
             {
@@ -331,7 +331,7 @@ TEST_CASE("constructors")
             CHECK(j.type() == json::value_t::array);
             CHECK(j == json({1.2, 2.3, 3.4, 4.5, 5.6}));
 
-            auto jva = j.get<std::valarray<double >> ();
+            auto jva = j.get<std::valarray<double>>();
             CHECK(jva.size() == va.size());
             for (size_t i = 0; i < jva.size(); ++i)
             {
