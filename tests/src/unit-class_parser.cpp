@@ -310,7 +310,7 @@ void validateFn(const std::string& original_string, const json& j, const json& c
     CHECK(j.get_end_position() == original_string.size());
 }
 
-void start_pos_end_pos_helper(std::string& nested_type_json_str, const std::string& root_type_json_str, const json& expected_json, json::parser_callback_t cb = nullptr)
+void validate_start_end_pos_for_nested_obj(std::string& nested_type_json_str, const std::string& root_type_json_str, const json& expected_json, json::parser_callback_t cb = nullptr)
 {
     json j;
 
@@ -1730,7 +1730,7 @@ TEST_CASE("parser class")
             { \
                 return true; \
             }; \
-            start_pos_end_pos_helper(nested_type_json_str, root_type_json_str, expected, cb); \
+            validate_start_end_pos_for_nested_obj(nested_type_json_str, root_type_json_str, expected, cb); \
         } \
         SECTION("filter element") \
         { \
@@ -1738,18 +1738,20 @@ TEST_CASE("parser class")
             { \
                 return (event != json::parse_event_t::key && event != json::parse_event_t::value) || j != json("a"); \
             }; \
-            start_pos_end_pos_helper(nested_type_json_str, root_type_json_str, filteredExpected, cb); \
+            validate_start_end_pos_for_nested_obj(nested_type_json_str, root_type_json_str, filteredExpected, cb); \
         } \
     } \
     SECTION("without callback") \
     { \
-        start_pos_end_pos_helper(nested_type_json_str, root_type_json_str, expected); \
+        validate_start_end_pos_for_nested_obj(nested_type_json_str, root_type_json_str, expected); \
     }
 
     SECTION("retrieve start position and end position")
     {
         SECTION("for object")
         {
+            // Create an object with spaces to test the start and end positions. Spaces will not be included in the
+            // JSON object, however, the start and end positions should include the spaces from the input JSON string.
             std::string nested_type_json_str =  R"({    "a":       1,"b"      : "test1"})";
             std::string root_type_json_str =  R"({    "nested": )" + nested_type_json_str + R"(, "anotherValue": "test2"})";
             auto expected = json({{"nested", {{"a", 1}, {"b", "test1"}}}, {"anotherValue", "test2"}});
