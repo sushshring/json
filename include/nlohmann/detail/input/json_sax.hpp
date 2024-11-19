@@ -230,6 +230,8 @@ class json_sax_dom_parser
     {
         ref_stack.push_back(handle_value(BasicJsonType::value_t::object));
 
+        // Manually set the start position of the object here.
+        // Ensure this is after the call to handle_value to ensure correct start position.
         if (m_lexer_ref)
         {
             ref_stack.back()->start_position = m_lexer_ref->get_position() - 1;
@@ -255,7 +257,6 @@ class json_sax_dom_parser
 
     bool end_object()
     {
-
         JSON_ASSERT(!ref_stack.empty());
         JSON_ASSERT(ref_stack.back()->is_object());
 
@@ -274,6 +275,8 @@ class json_sax_dom_parser
     {
         ref_stack.push_back(handle_value(BasicJsonType::value_t::array));
 
+        // Manually set the start position of the array here.
+        // Ensure this is after the call to handle_value to ensure correct start position.
         if (m_lexer_ref)
         {
             ref_stack.back()->start_position = m_lexer_ref->get_position() - 1;
@@ -365,9 +368,14 @@ class json_sax_dom_parser
                 }
                 case value_t::object:
                 case value_t::array:
+                {
+                    // object and array are handled in start_object() and start_array() handlers
+                    // skip setting the values here.
+                    break;
+                }
                 default:
                 {
-                    // invalid type for set_start_end_pos_for_handle_value.
+                    // Handle all possible types discretely, default handler should never be reached.
                     JSON_ASSERT(false);
                 }
             }
@@ -500,7 +508,9 @@ class json_sax_dom_callback_parser
         auto val = handle_value(BasicJsonType::value_t::object, true);
         ref_stack.push_back(val.second);
 
-        if (m_lexer_ref)
+        // Manually set the start position of the object here.
+        // Ensure this is after the call to handle_value to ensure correct start position.
+        if (m_lexer_ref && ref_stack.back())
         {
             ref_stack.back()->start_position = m_lexer_ref->get_position() - 1;
         }
@@ -579,7 +589,9 @@ class json_sax_dom_callback_parser
         auto val = handle_value(BasicJsonType::value_t::array, true);
         ref_stack.push_back(val.second);
 
-        if (m_lexer_ref)
+        // Manually set the start position of the array here.
+        // Ensure this is after the call to handle_value to ensure correct start position.
+        if (m_lexer_ref && ref_stack.back())
         {
             ref_stack.back()->start_position = m_lexer_ref->get_position() - 1;
         }
@@ -692,9 +704,14 @@ class json_sax_dom_callback_parser
                 }
                 case value_t::object:
                 case value_t::array:
+                {
+                    // object and array are handled in start_object() and start_array() handlers
+                    // skip setting the values here.
+                    break;
+                }
                 default:
                 {
-                    // invalid type for set_start_end_pos_for_handle_value.
+                    // Handle all possible types discretely, default handler should never be reached.
                     JSON_ASSERT(false);
                 }
             }
