@@ -7,6 +7,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "doctest_compatibility.h"
+#include <iostream>
 
 #define JSON_TESTS_PRIVATE
 #include <nlohmann/json.hpp>
@@ -303,14 +304,25 @@ void comments_helper(const std::string& s)
     }
 }
 
-void validateFn(const std::string& original_string, const json& j, const json& check)
+/**
+ * Validates that the generated JSON object is the same as expected
+ * Validates that the start position and end position match the start and end of the string
+ *
+ * This check assumes that there is no whitespace around the json object in the original string.
+ */
+void validate_generated_json_and_start_end_pos_helper(const std::string& original_string, const json& j, const json& check)
 {
     CHECK(j == check);
     CHECK(j.get_start_position() == 0);
     CHECK(j.get_end_position() == original_string.size());
 }
 
-void validate_start_end_pos_for_nested_obj(std::string& nested_type_json_str, const std::string& root_type_json_str, const json& expected_json, json::parser_callback_t cb = nullptr)
+/**
+ * Parses the root object from the given root string and validates that the start and end positions for the nested object are correct.
+ *
+ * This checks that whitespace around the nested object is included in the start and end positions of the root object.
+ */
+void validate_start_end_pos_for_nested_obj_helper(std::string& nested_type_json_str, const std::string& root_type_json_str, const json& expected_json, json::parser_callback_t cb = nullptr)
 {
     json j;
 
@@ -325,7 +337,8 @@ void validate_start_end_pos_for_nested_obj(std::string& nested_type_json_str, co
     }
 
     // 2. Check if the generated JSON is as expected
-    validateFn(root_type_json_str, j, expected_json);
+    // Assumptions: The root_type_json_str does not have any whitespace around the json object
+    validate_generated_json_and_start_end_pos_helper(root_type_json_str, j, expected_json);
 
     // 3. Get the nested object
     const auto& nested = j["nested"];
@@ -1730,7 +1743,7 @@ TEST_CASE("parser class")
             { \
                 return true; \
             }; \
-            validate_start_end_pos_for_nested_obj(nested_type_json_str, root_type_json_str, expected, cb); \
+            validate_start_end_pos_for_nested_obj_helper(nested_type_json_str, root_type_json_str, expected, cb); \
         } \
         SECTION("filter element") \
         { \
@@ -1738,12 +1751,12 @@ TEST_CASE("parser class")
             { \
                 return (event != json::parse_event_t::key && event != json::parse_event_t::value) || j != json("a"); \
             }; \
-            validate_start_end_pos_for_nested_obj(nested_type_json_str, root_type_json_str, filteredExpected, cb); \
+            validate_start_end_pos_for_nested_obj_helper(nested_type_json_str, root_type_json_str, filteredExpected, cb); \
         } \
     } \
     SECTION("without callback") \
     { \
-        validate_start_end_pos_for_nested_obj(nested_type_json_str, root_type_json_str, expected); \
+        validate_start_end_pos_for_nested_obj_helper(nested_type_json_str, root_type_json_str, expected); \
     }
 
     SECTION("retrieve start position and end position")
@@ -1815,22 +1828,22 @@ TEST_CASE("parser class")
                     // 1. string type
                     std::string json_str =  R"("test")";
                     json j = json::parse(json_str, cb);
-                    validateFn(json_str, j, "test");
+                    validate_generated_json_and_start_end_pos_helper(json_str, j, "test");
 
                     // 2. number type
                     json_str =  R"(1)";
                     j = json::parse(json_str, cb);
-                    validateFn(json_str, j, 1);
+                    validate_generated_json_and_start_end_pos_helper(json_str, j, 1);
 
                     // 3. boolean type
                     json_str =  R"(true)";
                     j = json::parse(json_str, cb);
-                    validateFn(json_str, j, true);
+                    validate_generated_json_and_start_end_pos_helper(json_str, j, true);
 
                     // 4. null type
                     json_str =  R"(null)";
                     j = json::parse(json_str, cb);
-                    validateFn(json_str, j, nullptr);
+                    validate_generated_json_and_start_end_pos_helper(json_str, j, nullptr);
                 }
 
                 SECTION("without callback")
@@ -1838,34 +1851,34 @@ TEST_CASE("parser class")
                     // 1. string type
                     std::string json_str =  R"("test")";
                     json j = json::parse(json_str);
-                    validateFn(json_str, j, "test");
+                    validate_generated_json_and_start_end_pos_helper(json_str, j, "test");
 
                     // 2. number type
                     json_str =  R"(1)";
                     j = json::parse(json_str);
-                    validateFn(json_str, j, 1);
+                    validate_generated_json_and_start_end_pos_helper(json_str, j, 1);
 
                     json_str = R"(1.001239923)";
                     j = json::parse(json_str);
-                    validateFn(json_str, j, 1.001239923);
+                    validate_generated_json_and_start_end_pos_helper(json_str, j, 1.001239923);
 
                     json_str = R"(1.123812389000000)";
                     j = json::parse(json_str);
-                    validateFn(json_str, j, 1.123812389);
+                    validate_generated_json_and_start_end_pos_helper(json_str, j, 1.123812389);
 
                     // 3. boolean type
                     json_str =  R"(true)";
                     j = json::parse(json_str);
-                    validateFn(json_str, j, true);
+                    validate_generated_json_and_start_end_pos_helper(json_str, j, true);
 
                     json_str =  R"(false)";
                     j = json::parse(json_str);
-                    validateFn(json_str, j, false);
+                    validate_generated_json_and_start_end_pos_helper(json_str, j, false);
 
                     // 4. null type
                     json_str =  R"(null)";
                     j = json::parse(json_str);
-                    validateFn(json_str, j, nullptr);
+                    validate_generated_json_and_start_end_pos_helper(json_str, j, nullptr);
                 }
             }
 
@@ -1908,6 +1921,38 @@ TEST_CASE("parser class")
                 filteredExpected.erase("a");
                 SETUP_TESTCASES()
             }
+        }
+        SECTION("with leading whitespace and newlines around root JSON")
+        {
+            std::string initial_whitespace = R"(
+                
+            )";
+            std::string nested_type_json_str = R"({
+                "a": 1,
+                "nested": {
+                    "b": "test"
+                },
+                "anotherValue": "test"
+            })";
+            std::string end_whitespace = R"(
+                
+            )";
+            std::string root_type_json_str = initial_whitespace;
+            root_type_json_str += nested_type_json_str;
+            root_type_json_str += end_whitespace;
+
+            auto expected = json({{"a", 1}, {"nested", {{"b", "test"}}}, {"anotherValue", "test"}});
+
+            json j = json::parse(root_type_json_str);
+
+            std::cout << root_type_json_str << std::endl;
+
+            // 2. Check if the generated JSON is as expected
+            CHECK(j == expected);
+
+            // 3. Check if the start and end positions do not include the surrounding whitespace
+            CHECK(j.get_start_position() == initial_whitespace.size());
+            CHECK(j.get_end_position() == root_type_json_str.size() - end_whitespace.size());
         }
     }
 }

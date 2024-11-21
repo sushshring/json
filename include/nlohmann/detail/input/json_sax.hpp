@@ -326,7 +326,7 @@ class json_sax_dom_parser
 
   private:
 
-    void set_start_end_pos_for_handle_value(BasicJsonType& v)
+    void set_start_end_pos_for_json_value(BasicJsonType& v)
     {
         if (m_lexer_ref)
         {
@@ -394,7 +394,7 @@ class json_sax_dom_parser
         if (ref_stack.empty())
         {
             root = BasicJsonType(std::forward<Value>(v));
-            set_start_end_pos_for_handle_value(root);
+            set_start_end_pos_for_json_value(root);
             return &root;
         }
 
@@ -403,14 +403,14 @@ class json_sax_dom_parser
         if (ref_stack.back()->is_array())
         {
             ref_stack.back()->m_data.m_value.array->emplace_back(std::forward<Value>(v));
-            set_start_end_pos_for_handle_value(ref_stack.back()->m_data.m_value.array->back());
+            set_start_end_pos_for_json_value(ref_stack.back()->m_data.m_value.array->back());
             return &(ref_stack.back()->m_data.m_value.array->back());
         }
 
         JSON_ASSERT(ref_stack.back()->is_object());
         JSON_ASSERT(object_element);
         *object_element = BasicJsonType(std::forward<Value>(v));
-        set_start_end_pos_for_handle_value(*object_element);
+        set_start_end_pos_for_json_value(*object_element);
         return object_element;
     }
 
@@ -589,17 +589,20 @@ class json_sax_dom_callback_parser
         auto val = handle_value(BasicJsonType::value_t::array, true);
         ref_stack.push_back(val.second);
 
-        // Manually set the start position of the array here.
-        // Ensure this is after the call to handle_value to ensure correct start position.
-        if (m_lexer_ref && ref_stack.back())
+        if (ref_stack.back())
         {
-            ref_stack.back()->start_position = m_lexer_ref->get_position() - 1;
-        }
+            // Manually set the start position of the array here.
+            // Ensure this is after the call to handle_value to ensure correct start position.
+            if (m_lexer_ref)
+            {
+                ref_stack.back()->start_position = m_lexer_ref->get_position() - 1;
+            }
 
-        // check array limit
-        if (ref_stack.back() && JSON_HEDLEY_UNLIKELY(len != static_cast<std::size_t>(-1) && len > ref_stack.back()->max_size()))
-        {
-            JSON_THROW(out_of_range::create(408, concat("excessive array size: ", std::to_string(len)), ref_stack.back()));
+            // check array limit
+            if (JSON_HEDLEY_UNLIKELY(len != static_cast<std::size_t>(-1) && len > ref_stack.back()->max_size()))
+            {
+                JSON_THROW(out_of_range::create(408, concat("excessive array size: ", std::to_string(len)), ref_stack.back()));
+            }
         }
 
         return true;
@@ -662,7 +665,7 @@ class json_sax_dom_callback_parser
   private:
 
     template<typename Value>
-    void set_start_end_pos_for_handle_value(Value& v)
+    void set_start_end_pos_for_json_value(Value& v)
     {
         if (m_lexer_ref)
         {
@@ -746,7 +749,7 @@ class json_sax_dom_callback_parser
 
         // create value
         auto value = BasicJsonType(std::forward<Value>(v));
-        set_start_end_pos_for_handle_value(value);
+        set_start_end_pos_for_json_value(value);
 
         // check callback
         const bool keep = skip_callback || callback(static_cast<int>(ref_stack.size()), parse_event_t::value, value);
@@ -815,7 +818,7 @@ class json_sax_dom_callback_parser
     const bool allow_exceptions = true;
     /// a discarded value for the callback
     BasicJsonType discarded = BasicJsonType::value_t::discarded;
-    /// the lexer to obtain the current position
+    /// the lexer reference to obtain the current position
     lexer_t* m_lexer_ref = nullptr;
 };
 
