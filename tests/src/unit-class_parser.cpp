@@ -7,7 +7,6 @@
 // SPDX-License-Identifier: MIT
 
 #include "doctest_compatibility.h"
-#include <iostream>
 
 #define JSON_TESTS_PRIVATE
 #include <nlohmann/json.hpp>
@@ -1937,15 +1936,11 @@ TEST_CASE("parser class")
             std::string end_whitespace = R"(
                 
             )";
-            std::string root_type_json_str = initial_whitespace;
-            root_type_json_str += nested_type_json_str;
-            root_type_json_str += end_whitespace;
+            std::string root_type_json_str = initial_whitespace + nested_type_json_str + end_whitespace;
 
             auto expected = json({{"a", 1}, {"nested", {{"b", "test"}}}, {"anotherValue", "test"}});
 
             json j = json::parse(root_type_json_str);
-
-            std::cout << root_type_json_str << std::endl;
 
             // 2. Check if the generated JSON is as expected
             CHECK(j == expected);
