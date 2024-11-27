@@ -120,9 +120,6 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     friend class ::nlohmann::detail::json_sax_dom_callback_parser;
     friend class ::nlohmann::detail::exception;
 
-    size_t start_position = std::string::npos;
-    size_t end_position = std::string::npos;
-
     /// workaround type for MSVC
     using basic_json_t = NLOHMANN_BASIC_JSON_TPL;
     using json_base_class_t = ::nlohmann::detail::json_base_class<CustomBaseClass>;
@@ -897,8 +894,6 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         }
         JSON_ASSERT(m_data.m_type == val.type());
         set_parents();
-        this->start_position = val.get_start_position();
-        this->end_position = val.get_end_position();
         assert_invariant();
     }
 
@@ -1210,9 +1205,6 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
                 break;
         }
 
-        this->start_position = other.start_position;
-        this->end_position = other.end_position;
-
         set_parents();
         assert_invariant();
     }
@@ -1221,7 +1213,6 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     /// @sa https://json.nlohmann.me/api/basic_json/basic_json/
     basic_json(basic_json&& other) noexcept
         : json_base_class_t(std::forward<json_base_class_t>(other)),
-          start_position(other.start_position), end_position(other.end_position),
           m_data(std::move(other.m_data))
     {
         // check that passed value is valid
@@ -1251,8 +1242,6 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         using std::swap;
         swap(m_data.m_type, other.m_data.m_type);
         swap(m_data.m_value, other.m_data.m_value);
-        this->start_position = other.start_position;
-        this->end_position = other.end_position;
         json_base_class_t::operator=(std::move(other));
 
         set_parents();
@@ -1403,16 +1392,6 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     constexpr operator value_t() const noexcept
     {
         return m_data.m_type;
-    }
-
-    size_t get_start_position() const noexcept
-    {
-        return start_position;
-    }
-
-    size_t get_end_position() const noexcept
-    {
-        return end_position;
     }
 
     /// @}

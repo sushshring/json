@@ -9,10 +9,24 @@
 #include "doctest_compatibility.h"
 
 #define JSON_TESTS_PRIVATE
+#include <nlohmann/detail/json_base_class_with_start_end_markers.hpp>
 #include <nlohmann/json.hpp>
 using nlohmann::json;
+
+using json_with_start_end_markers = nlohmann::basic_json <
+                                    std::map,
+                                    std::vector,
+                                    std::string,
+                                    bool,
+                                    std::int64_t,
+                                    std::uint64_t,
+                                    double,
+                                    std::allocator,
+                                    nlohmann::adl_serializer,
+                                    std::vector<std::uint8_t>,
+                                    ::nlohmann::detail::json_base_class_with_start_end_markers >;
 #ifdef JSON_TEST_NO_GLOBAL_UDLS
-    using namespace nlohmann::literals; // NOLINT(google-build-using-namespace)
+    using namespace nlohmann::literals;  // NOLINT(google-build-using-namespace)
 #endif
 
 #include <valarray>
@@ -309,7 +323,7 @@ void comments_helper(const std::string& s)
  *
  * This check assumes that there is no whitespace around the json object in the original string.
  */
-void validate_generated_json_and_start_end_pos_helper(const std::string& original_string, const json& j, const json& check)
+void validate_generated_json_and_start_end_pos_helper(const std::string& original_string, const json_with_start_end_markers& j, const json_with_start_end_markers& check)
 {
     CHECK(j == check);
     CHECK(j.get_start_position() == 0);
@@ -321,18 +335,18 @@ void validate_generated_json_and_start_end_pos_helper(const std::string& origina
  *
  * This checks that whitespace around the nested object is included in the start and end positions of the root object.
  */
-void validate_start_end_pos_for_nested_obj_helper(std::string& nested_type_json_str, const std::string& root_type_json_str, const json& expected_json, json::parser_callback_t cb = nullptr)
+void validate_start_end_pos_for_nested_obj_helper(std::string& nested_type_json_str, const std::string& root_type_json_str, const json_with_start_end_markers& expected_json, json_with_start_end_markers::parser_callback_t cb = nullptr)
 {
-    json j;
+    json_with_start_end_markers j;
 
     // 1. If callback is provided, use callback version of parse()
     if (cb)
     {
-        j = json::parse(root_type_json_str, cb);
+        j = json_with_start_end_markers::parse(root_type_json_str, cb);
     }
     else
     {
-        j = json::parse(root_type_json_str);
+        j = json_with_start_end_markers::parse(root_type_json_str);
     }
 
     // 2. Check if the generated JSON is as expected
@@ -1738,7 +1752,7 @@ TEST_CASE("parser class")
     { \
         SECTION("filter nothing") \
         { \
-            json::parser_callback_t const cb = [](int /*unused*/, json::parse_event_t /*unused*/, json& /*unused*/) noexcept \
+            json_with_start_end_markers::parser_callback_t const cb = [](int /*unused*/, json_with_start_end_markers::parse_event_t /*unused*/, json_with_start_end_markers& /*unused*/) noexcept \
             { \
                 return true; \
             }; \
@@ -1746,9 +1760,9 @@ TEST_CASE("parser class")
         } \
         SECTION("filter element") \
         { \
-            json::parser_callback_t const cb = [](int /*unused*/, json::parse_event_t event, json& j) noexcept \
+            json_with_start_end_markers::parser_callback_t const cb = [](int /*unused*/, json_with_start_end_markers::parse_event_t event, json_with_start_end_markers& j) noexcept \
             { \
-                return (event != json::parse_event_t::key && event != json::parse_event_t::value) || j != json("a"); \
+                return (event != json_with_start_end_markers::parse_event_t::key && event != json_with_start_end_markers::parse_event_t::value) || j != json_with_start_end_markers("a"); \
             }; \
             validate_start_end_pos_for_nested_obj_helper(nested_type_json_str, root_type_json_str, filteredExpected, cb); \
         } \
@@ -1766,7 +1780,7 @@ TEST_CASE("parser class")
             // JSON object, however, the start and end positions should include the spaces from the input JSON string.
             std::string nested_type_json_str =  R"({    "a":       1,"b"      : "test1"})";
             std::string root_type_json_str =  R"({    "nested": )" + nested_type_json_str + R"(, "anotherValue": "test2"})";
-            auto expected = json({{"nested", {{"a", 1}, {"b", "test1"}}}, {"anotherValue", "test2"}});
+            auto expected = json_with_start_end_markers({{"nested", {{"a", 1}, {"b", "test1"}}}, {"anotherValue", "test2"}});
             auto filteredExpected = expected;
             filteredExpected["nested"].erase("a");
 
@@ -1777,9 +1791,9 @@ TEST_CASE("parser class")
         {
             std::string nested_type_json_str =  R"(["a", "test", 45])";
             std::string root_type_json_str =  R"({   "nested": )" + nested_type_json_str + R"(, "anotherValue": "test" })";
-            auto expected = json({{"nested", {"a", "test", 45}}, {"anotherValue", "test"}});
+            auto expected = json_with_start_end_markers({{"nested", {"a", "test", 45}}, {"anotherValue", "test"}});
             auto filteredExpected = expected;
-            filteredExpected["nested"] = json({"test", 45});
+            filteredExpected["nested"] = json_with_start_end_markers({"test", 45});
             SETUP_TESTCASES()
         }
 
@@ -1787,12 +1801,12 @@ TEST_CASE("parser class")
         {
             std::string nested_type_json_str =  R"([{"a": 1, "b": "test"}, {"c": 2, "d": "test2"}])";
             std::string root_type_json_str =  R"({   "nested": )" + nested_type_json_str + R"(, "anotherValue": "test" })";
-            auto expected = json({{"nested", {{{"a", 1}, {"b", "test"}}, {{"c", 2}, {"d", "test2"}}}}, {"anotherValue", "test"}});
+            auto expected = json_with_start_end_markers({{"nested", {{{"a", 1}, {"b", "test"}}, {{"c", 2}, {"d", "test2"}}}}, {"anotherValue", "test"}});
             auto filteredExpected = expected;
             filteredExpected["nested"][0].erase("a");
             SETUP_TESTCASES()
 
-            auto j = json::parse(root_type_json_str);
+            auto j = json_with_start_end_markers::parse(root_type_json_str);
             auto nested_array = j["nested"];
             auto nested_obj = nested_array[0];
             CHECK(nested_type_json_str.substr(1, 21) == root_type_json_str.substr(nested_obj.get_start_position(), nested_obj.get_end_position() - nested_obj.get_start_position()));
@@ -1803,12 +1817,12 @@ TEST_CASE("parser class")
         {
             std::string nested_type_json_str =  R"({"nested2": {"b": "test"}})";
             std::string root_type_json_str =  R"({   "a": 2, "nested": )" + nested_type_json_str + R"(, "anotherValue": "test" })";
-            auto expected = json({{"a", 2}, {"nested", {{"nested2", {{"b", "test"}}}}}, {"anotherValue", "test"}});
+            auto expected = json_with_start_end_markers({{"a", 2}, {"nested", {{"nested2", {{"b", "test"}}}}}, {"anotherValue", "test"}});
             auto filteredExpected = expected;
             filteredExpected.erase("a");
             SETUP_TESTCASES()
 
-            auto j = json::parse(root_type_json_str);
+            auto j = json_with_start_end_markers::parse(root_type_json_str);
             auto nested_obj = j["nested"]["nested2"];
             CHECK(nested_type_json_str.substr(12, 13) == root_type_json_str.substr(nested_obj.get_start_position(), nested_obj.get_end_position() - nested_obj.get_start_position()));
         }
@@ -1819,29 +1833,29 @@ TEST_CASE("parser class")
             {
                 SECTION("with callback")
                 {
-                    json::parser_callback_t const cb = [](int /*unused*/, json::parse_event_t /*unused*/, json& /*unused*/) noexcept
+                    json_with_start_end_markers::parser_callback_t const cb = [](int /*unused*/, json_with_start_end_markers::parse_event_t /*unused*/, json_with_start_end_markers& /*unused*/) noexcept
                     {
                         return true;
                     };
 
                     // 1. string type
                     std::string json_str =  R"("test")";
-                    json j = json::parse(json_str, cb);
+                    auto j = json_with_start_end_markers::parse(json_str, cb);
                     validate_generated_json_and_start_end_pos_helper(json_str, j, "test");
 
                     // 2. number type
                     json_str =  R"(1)";
-                    j = json::parse(json_str, cb);
+                    j = json_with_start_end_markers::parse(json_str, cb);
                     validate_generated_json_and_start_end_pos_helper(json_str, j, 1);
 
                     // 3. boolean type
                     json_str =  R"(true)";
-                    j = json::parse(json_str, cb);
+                    j = json_with_start_end_markers::parse(json_str, cb);
                     validate_generated_json_and_start_end_pos_helper(json_str, j, true);
 
                     // 4. null type
                     json_str =  R"(null)";
-                    j = json::parse(json_str, cb);
+                    j = json_with_start_end_markers::parse(json_str, cb);
                     validate_generated_json_and_start_end_pos_helper(json_str, j, nullptr);
                 }
 
@@ -1849,34 +1863,34 @@ TEST_CASE("parser class")
                 {
                     // 1. string type
                     std::string json_str =  R"("test")";
-                    json j = json::parse(json_str);
+                    auto j = json_with_start_end_markers::parse(json_str);
                     validate_generated_json_and_start_end_pos_helper(json_str, j, "test");
 
                     // 2. number type
                     json_str =  R"(1)";
-                    j = json::parse(json_str);
+                    j = json_with_start_end_markers::parse(json_str);
                     validate_generated_json_and_start_end_pos_helper(json_str, j, 1);
 
                     json_str = R"(1.001239923)";
-                    j = json::parse(json_str);
+                    j = json_with_start_end_markers::parse(json_str);
                     validate_generated_json_and_start_end_pos_helper(json_str, j, 1.001239923);
 
                     json_str = R"(1.123812389000000)";
-                    j = json::parse(json_str);
+                    j = json_with_start_end_markers::parse(json_str);
                     validate_generated_json_and_start_end_pos_helper(json_str, j, 1.123812389);
 
                     // 3. boolean type
                     json_str =  R"(true)";
-                    j = json::parse(json_str);
+                    j = json_with_start_end_markers::parse(json_str);
                     validate_generated_json_and_start_end_pos_helper(json_str, j, true);
 
                     json_str =  R"(false)";
-                    j = json::parse(json_str);
+                    j = json_with_start_end_markers::parse(json_str);
                     validate_generated_json_and_start_end_pos_helper(json_str, j, false);
 
                     // 4. null type
                     json_str =  R"(null)";
-                    j = json::parse(json_str);
+                    j = json_with_start_end_markers::parse(json_str);
                     validate_generated_json_and_start_end_pos_helper(json_str, j, nullptr);
                 }
             }
@@ -1885,7 +1899,7 @@ TEST_CASE("parser class")
             {
                 std::string nested_type_json_str =  R"("test")";
                 std::string root_type_json_str =  R"({ "a": 1,   "nested": )" + nested_type_json_str + R"(, "anotherValue": "test" })";
-                auto expected = json({{"nested", "test"}, {"anotherValue", "test"}, {"a", 1}});
+                auto expected = json_with_start_end_markers({{"nested", "test"}, {"anotherValue", "test"}, {"a", 1}});
                 auto filteredExpected = expected;
                 filteredExpected.erase("a");
                 SETUP_TESTCASES()
@@ -1895,7 +1909,7 @@ TEST_CASE("parser class")
             {
                 std::string nested_type_json_str =  R"(2)";
                 std::string root_type_json_str =  R"({ "a": 1,   "nested": )" + nested_type_json_str + R"(, "anotherValue": "test" })";
-                auto expected = json({{"nested", 2}, {"anotherValue", "test"}, {"a", 1}});
+                auto expected = json_with_start_end_markers({{"nested", 2}, {"anotherValue", "test"}, {"a", 1}});
                 auto filteredExpected = expected;
                 filteredExpected.erase("a");
                 SETUP_TESTCASES()
@@ -1905,7 +1919,7 @@ TEST_CASE("parser class")
             {
                 std::string nested_type_json_str =  R"(true)";
                 std::string root_type_json_str =  R"({ "a": 1,   "nested": )" + nested_type_json_str + R"(, "anotherValue": "test" })";
-                auto expected = json({{"nested", true}, {"anotherValue", "test"}, {"a", 1}});
+                auto expected = json_with_start_end_markers({{"nested", true}, {"anotherValue", "test"}, {"a", 1}});
                 auto filteredExpected = expected;
                 filteredExpected.erase("a");
                 SETUP_TESTCASES()
@@ -1915,7 +1929,7 @@ TEST_CASE("parser class")
             {
                 std::string nested_type_json_str =  R"(null)";
                 std::string root_type_json_str =  R"({ "a": 1,   "nested": )" + nested_type_json_str + R"(, "anotherValue": "test" })";
-                auto expected = json({{"nested", nullptr}, {"anotherValue", "test"}, {"a", 1}});
+                auto expected = json_with_start_end_markers({{"nested", nullptr}, {"anotherValue", "test"}, {"a", 1}});
                 auto filteredExpected = expected;
                 filteredExpected.erase("a");
                 SETUP_TESTCASES()
@@ -1938,9 +1952,9 @@ TEST_CASE("parser class")
             )";
             std::string root_type_json_str = initial_whitespace + nested_type_json_str + end_whitespace;
 
-            auto expected = json({{"a", 1}, {"nested", {{"b", "test"}}}, {"anotherValue", "test"}});
+            auto expected = json_with_start_end_markers({{"a", 1}, {"nested", {{"b", "test"}}}, {"anotherValue", "test"}});
 
-            json j = json::parse(root_type_json_str);
+            auto j = json_with_start_end_markers::parse(root_type_json_str);
 
             // 2. Check if the generated JSON is as expected
             CHECK(j == expected);

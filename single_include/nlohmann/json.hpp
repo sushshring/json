@@ -8401,6 +8401,61 @@ scan_number_done:
 }  // namespace detail
 NLOHMANN_JSON_NAMESPACE_END
 
+// #include <nlohmann/detail/json_base_class_with_start_end_markers.hpp>
+//     __ _____ _____ _____
+//  __|  |   __|     |   | |  JSON for Modern C++
+// |  |  |__   |  |  | | | |  version 3.11.3
+// |_____|_____|_____|_|___|  https://github.com/nlohmann/json
+//
+// SPDX-FileCopyrightText: 2013-2023 Niels Lohmann <https://nlohmann.me>
+// SPDX-License-Identifier: MIT
+
+
+
+#include <type_traits> // conditional, is_same
+#include <string>
+
+// #include <nlohmann/detail/abi_macros.hpp>
+
+
+NLOHMANN_JSON_NAMESPACE_BEGIN
+namespace detail
+{
+
+/*!
+@brief Custom base class of the @ref basic_json class.
+
+*/
+class json_base_class_with_start_end_markers
+{
+    size_t start_position = std::string::npos;
+    size_t end_position = std::string::npos;
+
+  public:
+    size_t get_start_position() const noexcept
+    {
+        return start_position;
+    }
+
+    size_t get_end_position() const noexcept
+    {
+        return end_position;
+    }
+
+    void set_start_position(size_t start) noexcept
+    {
+        start_position = start;
+    }
+
+    void set_end_position(size_t end) noexcept
+    {
+        end_position = end;
+    }
+};
+
+}  // namespace detail
+NLOHMANN_JSON_NAMESPACE_END
+
 NLOHMANN_JSON_NAMESPACE_BEGIN
 
 /*!
@@ -8616,9 +8671,12 @@ class json_sax_dom_parser
 
         // Manually set the start position of the object here.
         // Ensure this is after the call to handle_value to ensure correct start position.
-        if (m_lexer_ref)
+        if (JSON_HEDLEY_UNLIKELY((std::is_base_of<::nlohmann::detail::json_base_class_with_start_end_markers, BasicJsonType>::value)))
         {
-            ref_stack.back()->start_position = m_lexer_ref->get_position() - 1;
+            if (m_lexer_ref)
+            {
+                reinterpret_cast<::nlohmann::detail::json_base_class_with_start_end_markers*>(ref_stack.back())->set_start_position(m_lexer_ref->get_position() - 1);
+            }
         }
 
         if (JSON_HEDLEY_UNLIKELY(len != static_cast<std::size_t>(-1) && len > ref_stack.back()->max_size()))
@@ -8644,10 +8702,10 @@ class json_sax_dom_parser
         JSON_ASSERT(!ref_stack.empty());
         JSON_ASSERT(ref_stack.back()->is_object());
 
-        if (m_lexer_ref)
+        if (m_lexer_ref && JSON_HEDLEY_UNLIKELY((std::is_base_of<::nlohmann::detail::json_base_class_with_start_end_markers, BasicJsonType>::value)))
         {
             // set end position of the object (inclusive)
-            ref_stack.back()->end_position = m_lexer_ref->get_position();
+            reinterpret_cast<::nlohmann::detail::json_base_class_with_start_end_markers*>(ref_stack.back())->set_end_position(m_lexer_ref->get_position());
         }
 
         ref_stack.back()->set_parents();
@@ -8661,9 +8719,12 @@ class json_sax_dom_parser
 
         // Manually set the start position of the array here.
         // Ensure this is after the call to handle_value to ensure correct start position.
-        if (m_lexer_ref)
+        if (JSON_HEDLEY_UNLIKELY((std::is_base_of<::nlohmann::detail::json_base_class_with_start_end_markers, BasicJsonType>::value)))
         {
-            ref_stack.back()->start_position = m_lexer_ref->get_position() - 1;
+            if (m_lexer_ref)
+            {
+                reinterpret_cast<::nlohmann::detail::json_base_class_with_start_end_markers*>(ref_stack.back())->set_start_position(m_lexer_ref->get_position() - 1);
+            }
         }
 
         if (JSON_HEDLEY_UNLIKELY(len != static_cast<std::size_t>(-1) && len > ref_stack.back()->max_size()))
@@ -8679,10 +8740,10 @@ class json_sax_dom_parser
         JSON_ASSERT(!ref_stack.empty());
         JSON_ASSERT(ref_stack.back()->is_array());
 
-        if (m_lexer_ref)
+        if (m_lexer_ref && JSON_HEDLEY_UNLIKELY((std::is_base_of<::nlohmann::detail::json_base_class_with_start_end_markers, BasicJsonType>::value)))
         {
             // set end position of the object (inclusive)
-            ref_stack.back()->end_position = m_lexer_ref->get_position();
+            reinterpret_cast<::nlohmann::detail::json_base_class_with_start_end_markers*>(ref_stack.back())->set_end_position(m_lexer_ref->get_position());
         }
 
         ref_stack.back()->set_parents();
@@ -8712,55 +8773,59 @@ class json_sax_dom_parser
 
     void set_start_end_pos_for_json_value(BasicJsonType& v)
     {
-        if (m_lexer_ref)
+        if (JSON_HEDLEY_UNLIKELY((std::is_base_of<::nlohmann::detail::json_base_class_with_start_end_markers, BasicJsonType>::value)))
         {
-            v.end_position = m_lexer_ref->get_position();
-
-            switch (v.type())
+            if (m_lexer_ref)
             {
-                case value_t::boolean:
-                {
-                    v.start_position = v.end_position - (v.m_data.m_value.boolean ? 4 : 5);
-                    break;
-                }
+                auto v_base = reinterpret_cast<::nlohmann::detail::json_base_class_with_start_end_markers*>(&v);
+                v_base->set_end_position(m_lexer_ref->get_position());
 
-                case value_t::null:
+                switch (v.type())
                 {
-                    v.start_position = v.end_position - 4;
-                    break;
-                }
+                    case value_t::boolean:
+                    {
+                        v_base->set_start_position(v_base->get_end_position() - (v.m_data.m_value.boolean ? 4 : 5));
+                        break;
+                    }
 
-                case value_t::string:
-                {
-                    v.start_position = v.end_position - v.m_data.m_value.string->size() - 2;
-                    break;
-                }
+                    case value_t::null:
+                    {
+                        v_base->set_start_position(v_base->get_end_position() - 4);
+                        break;
+                    }
 
-                case value_t::discarded:
-                {
-                    v.end_position = std::string::npos;
-                    v.start_position = v.end_position;
-                    break;
-                }
-                case value_t::binary:
-                case value_t::number_integer:
-                case value_t::number_unsigned:
-                case value_t::number_float:
-                {
-                    v.start_position = v.end_position - m_lexer_ref->get_string().size();
-                    break;
-                }
-                case value_t::object:
-                case value_t::array:
-                {
-                    // object and array are handled in start_object() and start_array() handlers
-                    // skip setting the values here.
-                    break;
-                }
-                default:
-                {
-                    // Handle all possible types discretely, default handler should never be reached.
-                    JSON_ASSERT(false);
+                    case value_t::string:
+                    {
+                        v_base->set_start_position(v_base->get_end_position() - v.m_data.m_value.string->size() - 2);
+                        break;
+                    }
+
+                    case value_t::discarded:
+                    {
+                        v_base->set_end_position(std::string::npos);
+                        v_base->set_start_position(v_base->get_end_position());
+                        break;
+                    }
+                    case value_t::binary:
+                    case value_t::number_integer:
+                    case value_t::number_unsigned:
+                    case value_t::number_float:
+                    {
+                        v_base->set_start_position(v_base->get_end_position() - m_lexer_ref->get_string().size());
+                        break;
+                    }
+                    case value_t::object:
+                    case value_t::array:
+                    {
+                        // object and array are handled in start_object() and start_array() handlers
+                        // skip setting the values here.
+                        break;
+                    }
+                    default:
+                    {
+                        // Handle all possible types discretely, default handler should never be reached.
+                        JSON_ASSERT(false);  // NOLINT(cert-dcl03-c,hicpp-static-assert,misc-static-assert,-warnings-as-errors)
+                    }
                 }
             }
         }
@@ -8829,7 +8894,7 @@ class json_sax_dom_callback_parser
                                  const parser_callback_t cb,
                                  const bool allow_exceptions_ = true,
                                  lexer_t* lexer_ = nullptr)
-        : root(r), callback(cb), allow_exceptions(allow_exceptions_), m_lexer_ref(lexer_)
+        : root(r), callback(std::move(cb)), allow_exceptions(allow_exceptions_), m_lexer_ref(lexer_)
     {
         keep_stack.push_back(true);
     }
@@ -8894,9 +8959,12 @@ class json_sax_dom_callback_parser
 
         // Manually set the start position of the object here.
         // Ensure this is after the call to handle_value to ensure correct start position.
-        if (m_lexer_ref && ref_stack.back())
+        if (JSON_HEDLEY_UNLIKELY((std::is_base_of<::nlohmann::detail::json_base_class_with_start_end_markers, BasicJsonType>::value)))
         {
-            ref_stack.back()->start_position = m_lexer_ref->get_position() - 1;
+            if (m_lexer_ref && ref_stack.back())
+            {
+                reinterpret_cast<::nlohmann::detail::json_base_class_with_start_end_markers*>(ref_stack.back())->set_start_position(m_lexer_ref->get_position() - 1);
+            }
         }
 
         // check object limit
@@ -8936,9 +9004,9 @@ class json_sax_dom_callback_parser
             }
             else
             {
-                if (m_lexer_ref)
+                if (m_lexer_ref && JSON_HEDLEY_UNLIKELY((std::is_base_of<::nlohmann::detail::json_base_class_with_start_end_markers, BasicJsonType>::value)))
                 {
-                    ref_stack.back()->end_position = m_lexer_ref->get_position();
+                    reinterpret_cast<::nlohmann::detail::json_base_class_with_start_end_markers*>(ref_stack.back())->set_end_position(m_lexer_ref->get_position());
                 }
                 ref_stack.back()->set_parents();
             }
@@ -8977,9 +9045,12 @@ class json_sax_dom_callback_parser
         {
             // Manually set the start position of the array here.
             // Ensure this is after the call to handle_value to ensure correct start position.
-            if (m_lexer_ref)
+            if (JSON_HEDLEY_UNLIKELY((std::is_base_of<::nlohmann::detail::json_base_class_with_start_end_markers, BasicJsonType>::value)))
             {
-                ref_stack.back()->start_position = m_lexer_ref->get_position() - 1;
+                if (m_lexer_ref)
+                {
+                    reinterpret_cast<::nlohmann::detail::json_base_class_with_start_end_markers*>(ref_stack.back())->set_start_position(m_lexer_ref->get_position() - 1);
+                }
             }
 
             // check array limit
@@ -9001,9 +9072,9 @@ class json_sax_dom_callback_parser
             keep = callback(static_cast<int>(ref_stack.size()) - 1, parse_event_t::array_end, *ref_stack.back());
             if (keep)
             {
-                if (m_lexer_ref)
+                if (m_lexer_ref && JSON_HEDLEY_UNLIKELY((std::is_base_of<::nlohmann::detail::json_base_class_with_start_end_markers, BasicJsonType>::value)))
                 {
-                    ref_stack.back()->end_position = m_lexer_ref->get_position();
+                    reinterpret_cast<::nlohmann::detail::json_base_class_with_start_end_markers*>(ref_stack.back())->set_end_position(m_lexer_ref->get_position());
                 }
                 ref_stack.back()->set_parents();
             }
@@ -9051,55 +9122,59 @@ class json_sax_dom_callback_parser
     template<typename Value>
     void set_start_end_pos_for_json_value(Value& v)
     {
-        if (m_lexer_ref)
+        if (JSON_HEDLEY_UNLIKELY((std::is_base_of<::nlohmann::detail::json_base_class_with_start_end_markers, BasicJsonType>::value)))
         {
-            v.end_position = m_lexer_ref->get_position();
-
-            switch (v.type())
+            if (m_lexer_ref)
             {
-                case value_t::boolean:
-                {
-                    v.start_position = v.end_position - (v.m_data.m_value.boolean ? 4 : 5);
-                    break;
-                }
+                auto v_base = reinterpret_cast<::nlohmann::detail::json_base_class_with_start_end_markers*>(&v);
+                v_base->set_end_position(m_lexer_ref->get_position());
 
-                case value_t::null:
+                switch (v.type())
                 {
-                    v.start_position = v.end_position - 4;
-                    break;
-                }
+                    case value_t::boolean:
+                    {
+                        v_base->set_start_position(v_base->get_end_position() - (v.m_data.m_value.boolean ? 4 : 5));
+                        break;
+                    }
 
-                case value_t::string:
-                {
-                    v.start_position = v.end_position - v.m_data.m_value.string->size() - 2;
-                    break;
-                }
+                    case value_t::null:
+                    {
+                        v_base->set_start_position(v_base->get_end_position() - 4);
+                        break;
+                    }
 
-                case value_t::discarded:
-                {
-                    v.end_position = std::string::npos;
-                    v.start_position = v.end_position;
-                    break;
-                }
-                case value_t::binary:
-                case value_t::number_integer:
-                case value_t::number_unsigned:
-                case value_t::number_float:
-                {
-                    v.start_position = v.end_position - m_lexer_ref->get_string().size();
-                    break;
-                }
-                case value_t::object:
-                case value_t::array:
-                {
-                    // object and array are handled in start_object() and start_array() handlers
-                    // skip setting the values here.
-                    break;
-                }
-                default:
-                {
-                    // Handle all possible types discretely, default handler should never be reached.
-                    JSON_ASSERT(false);
+                    case value_t::string:
+                    {
+                        v_base->set_start_position(v_base->get_end_position() - v.m_data.m_value.string->size() - 2);
+                        break;
+                    }
+
+                    case value_t::discarded:
+                    {
+                        v_base->set_end_position(std::string::npos);
+                        v_base->set_start_position(v_base->get_end_position());
+                        break;
+                    }
+                    case value_t::binary:
+                    case value_t::number_integer:
+                    case value_t::number_unsigned:
+                    case value_t::number_float:
+                    {
+                        v_base->set_start_position(v_base->get_end_position() - m_lexer_ref->get_string().size());
+                        break;
+                    }
+                    case value_t::object:
+                    case value_t::array:
+                    {
+                        // object and array are handled in start_object() and start_array() handlers
+                        // skip setting the values here.
+                        break;
+                    }
+                    default:
+                    {
+                        // Handle all possible types discretely, default handler should never be reached.
+                        JSON_ASSERT(false); // NOLINT(cert-dcl03-c,hicpp-static-assert,misc-static-assert,-warnings-as-errors)
+                    }
                 }
             }
         }
@@ -19706,9 +19781,6 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     friend class ::nlohmann::detail::json_sax_dom_callback_parser;
     friend class ::nlohmann::detail::exception;
 
-    size_t start_position = std::string::npos;
-    size_t end_position = std::string::npos;
-
     /// workaround type for MSVC
     using basic_json_t = NLOHMANN_BASIC_JSON_TPL;
     using json_base_class_t = ::nlohmann::detail::json_base_class<CustomBaseClass>;
@@ -20483,8 +20555,6 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         }
         JSON_ASSERT(m_data.m_type == val.type());
         set_parents();
-        this->start_position = val.get_start_position();
-        this->end_position = val.get_end_position();
         assert_invariant();
     }
 
@@ -20796,9 +20866,6 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
                 break;
         }
 
-        this->start_position = other.start_position;
-        this->end_position = other.end_position;
-
         set_parents();
         assert_invariant();
     }
@@ -20807,7 +20874,6 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     /// @sa https://json.nlohmann.me/api/basic_json/basic_json/
     basic_json(basic_json&& other) noexcept
         : json_base_class_t(std::forward<json_base_class_t>(other)),
-          start_position(other.start_position), end_position(other.end_position),
           m_data(std::move(other.m_data))
     {
         // check that passed value is valid
@@ -20837,8 +20903,6 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         using std::swap;
         swap(m_data.m_type, other.m_data.m_type);
         swap(m_data.m_value, other.m_data.m_value);
-        this->start_position = other.start_position;
-        this->end_position = other.end_position;
         json_base_class_t::operator=(std::move(other));
 
         set_parents();
@@ -20989,16 +21053,6 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     constexpr operator value_t() const noexcept
     {
         return m_data.m_type;
-    }
-
-    size_t get_start_position() const noexcept
-    {
-        return start_position;
-    }
-
-    size_t get_end_position() const noexcept
-    {
-        return end_position;
     }
 
     /// @}
