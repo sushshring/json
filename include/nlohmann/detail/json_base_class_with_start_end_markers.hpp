@@ -8,8 +8,7 @@
 
 #pragma once
 
-#include <type_traits> // conditional, is_same
-#include <string>
+#include <string> // string::npos
 
 #include <nlohmann/detail/abi_macros.hpp>
 
@@ -18,34 +17,15 @@ namespace detail
 {
 
 /*!
-@brief Custom base class of the @ref basic_json class.
-
+@brief Custom base struct of the @ref basic_json class.
+This class exposes the start and end positions for all fields of a JSON object
+with reference to the parsed input.
 */
-class json_base_class_with_start_end_markers
+struct json_base_class_with_start_end_markers
 {
+  public:
     size_t start_position = std::string::npos;
     size_t end_position = std::string::npos;
-
-  public:
-    size_t get_start_position() const noexcept
-    {
-        return start_position;
-    }
-
-    size_t get_end_position() const noexcept
-    {
-        return end_position;
-    }
-
-    void set_start_position(size_t start) noexcept
-    {
-        start_position = start;
-    }
-
-    void set_end_position(size_t end) noexcept
-    {
-        end_position = end;
-    }
 };
 
 }  // namespace detail
