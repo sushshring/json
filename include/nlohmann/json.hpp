@@ -1223,6 +1223,10 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     /// @sa https://json.nlohmann.me/api/basic_json/basic_json/
     basic_json(basic_json&& other) noexcept
         : json_base_class_t(std::forward<json_base_class_t>(other)),
+#if DIAGNOSTIC_POSITIONS
+          start_position(other.start_position),
+          end_position(other.end_position),
+#endif
           m_data(std::move(other.m_data))
     {
         // check that passed value is valid
@@ -1233,9 +1237,6 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         other.m_data.m_value = {};
 
 #if DIAGNOSTIC_POSITIONS
-        start_position = other.start_position;
-        end_position = other.end_position;
-
         other.start_position = std::string::npos;
         other.end_position = std::string::npos;
 #endif

@@ -228,20 +228,13 @@ class json_sax_dom_parser
         return true;
     }
 
-    // HANDLE_START_END_POS_DEFINITION(start_object,
-    // {
-    //     // Lexer has read the first character of the object, so
-    //     // subtract 1 from the position to get the correct start position.
-    //     ref_stack.back()->start_position = m_lexer_ref->get_position() - 1;
-    // })
-
     bool start_object(std::size_t len)
     {
         ref_stack.push_back(handle_value(BasicJsonType::value_t::object));
 
+#if DIAGNOSTIC_POSITIONS
         // Manually set the start position of the object here.
         // Ensure this is after the call to handle_value to ensure correct start position.
-#if DIAGNOSTIC_POSITIONS
         if (m_lexer_ref)
         {
             // Lexer has read the first character of the object, so
@@ -268,11 +261,6 @@ class json_sax_dom_parser
         return true;
     }
 
-    // HANDLE_START_END_POS_DEFINITION(end_object,
-    // {
-    //     ref_stack.back()->end_position = m_lexer_ref->get_position();
-    // })
-
     bool end_object()
     {
         JSON_ASSERT(!ref_stack.empty());
@@ -290,20 +278,13 @@ class json_sax_dom_parser
         return true;
     }
 
-    // HANDLE_START_END_POS_DEFINITION(start_array,
-    // {
-    //     // Lexer has read the first character of the array, so
-    //     // subtract 1 from the position to get the correct start position.
-    //     ref_stack.back()->start_position = m_lexer_ref->get_position() - 1;
-    // })
-
     bool start_array(std::size_t len)
     {
         ref_stack.push_back(handle_value(BasicJsonType::value_t::array));
 
+#if DIAGNOSTIC_POSITIONS
         // Manually set the start position of the array here.
         // Ensure this is after the call to handle_value to ensure correct start position.
-#if DIAGNOSTIC_POSITIONS
         if (m_lexer_ref)
         {
             ref_stack.back()->start_position = m_lexer_ref->get_position() - 1;
@@ -317,11 +298,6 @@ class json_sax_dom_parser
 
         return true;
     }
-
-    // HANDLE_START_END_POS_DEFINITION(end_array,
-    // {
-    //     ref_stack.back()->end_position = m_lexer_ref->get_position();
-    // })
 
     bool end_array()
     {
@@ -545,13 +521,6 @@ class json_sax_dom_callback_parser
         return true;
     }
 
-    // HANDLE_START_END_POS_DEFINITION(start_object,
-    // {
-    //     // Lexer has read the first character of the object, so
-    //     // subtract 1 from the position to get the correct start position.
-    //     ref_stack.back()->start_position = m_lexer_ref->get_position() - 1;
-    // })
-
     bool start_object(std::size_t len)
     {
         // check callback for object start
@@ -563,9 +532,9 @@ class json_sax_dom_callback_parser
 
         if (ref_stack.back())
         {
+#if DIAGNOSTIC_POSITIONS
             // Manually set the start position of the object here.
             // Ensure this is after the call to handle_value to ensure correct start position.
-#if DIAGNOSTIC_POSITIONS
             if (m_lexer_ref)
             {
                 // Lexer has read the first character of the object, so
@@ -599,11 +568,6 @@ class json_sax_dom_callback_parser
 
         return true;
     }
-
-    // HANDLE_START_END_POS_DEFINITION(end_object,
-    // {
-    //     ref_stack.back()->end_position = m_lexer_ref->get_position();
-    // })
 
     bool end_object()
     {
@@ -647,13 +611,6 @@ class json_sax_dom_callback_parser
         return true;
     }
 
-    // HANDLE_START_END_POS_DEFINITION(start_array,
-    // {
-    //     // Lexer has read the first character of the array, so
-    //     // subtract 1 from the position to get the correct start position.
-    //     ref_stack.back()->start_position = m_lexer_ref->get_position() - 1;
-    // })
-
     bool start_array(std::size_t len)
     {
         const bool keep = callback(static_cast<int>(ref_stack.size()), parse_event_t::array_start, discarded);
@@ -664,9 +621,9 @@ class json_sax_dom_callback_parser
 
         if (ref_stack.back())
         {
+#if DIAGNOSTIC_POSITIONS
             // Manually set the start position of the array here.
             // Ensure this is after the call to handle_value to ensure correct start position.
-#if DIAGNOSTIC_POSITIONS
             if (m_lexer_ref)
             {
                 // Lexer has read the first character of the array, so
@@ -684,11 +641,6 @@ class json_sax_dom_callback_parser
 
         return true;
     }
-
-    // HANDLE_START_END_POS_DEFINITION(end_array,
-    // {
-    //     ref_stack.back()->end_position = m_lexer_ref->get_position();
-    // })
 
     bool end_array()
     {
