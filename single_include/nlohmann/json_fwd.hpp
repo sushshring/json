@@ -144,7 +144,6 @@ with reference to the parsed input.
 */
 struct json_base_class_with_start_end_markers
 {
-  public:
     size_t start_position = std::string::npos;
     size_t end_position = std::string::npos;
 };

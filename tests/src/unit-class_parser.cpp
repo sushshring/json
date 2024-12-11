@@ -9,7 +9,6 @@
 #include "doctest_compatibility.h"
 
 #define JSON_TESTS_PRIVATE
-#include <nlohmann/detail/json_base_class_with_start_end_markers.hpp>
 #include <nlohmann/json.hpp>
 #include <nlohmann/json_fwd.hpp>
 using nlohmann::json;
@@ -324,7 +323,7 @@ void validate_generated_json_and_start_end_pos_helper(const std::string& origina
  *
  * This checks that whitespace around the nested object is included in the start and end positions of the root object.
  */
-void validate_start_end_pos_for_nested_obj_helper(std::string& nested_type_json_str, const std::string& root_type_json_str, const nlohmann::json_with_start_end_markers& expected_json, nlohmann::json_with_start_end_markers::parser_callback_t cb = nullptr)
+void validate_start_end_pos_for_nested_obj_helper(const std::string& nested_type_json_str, const std::string& root_type_json_str, const nlohmann::json_with_start_end_markers& expected_json, const nlohmann::json_with_start_end_markers::parser_callback_t& cb = nullptr)
 {
     nlohmann::json_with_start_end_markers j;
 
@@ -1767,8 +1766,8 @@ TEST_CASE("parser class")
         {
             // Create an object with spaces to test the start and end positions. Spaces will not be included in the
             // JSON object, however, the start and end positions should include the spaces from the input JSON string.
-            std::string nested_type_json_str =  R"({    "a":       1,"b"      : "test1"})";
-            std::string root_type_json_str =  R"({    "nested": )" + nested_type_json_str + R"(, "anotherValue": "test2"})";
+            const std::string nested_type_json_str =  R"({    "a":       1,"b"      : "test1"})";
+            const std::string root_type_json_str =  R"({    "nested": )" + nested_type_json_str + R"(, "anotherValue": "test2"})";
             auto expected = nlohmann::json_with_start_end_markers({{"nested", {{"a", 1}, {"b", "test1"}}}, {"anotherValue", "test2"}});
             auto filteredExpected = expected;
             filteredExpected["nested"].erase("a");
@@ -1778,8 +1777,8 @@ TEST_CASE("parser class")
 
         SECTION("for array")
         {
-            std::string nested_type_json_str =  R"(["a", "test", 45])";
-            std::string root_type_json_str =  R"({   "nested": )" + nested_type_json_str + R"(, "anotherValue": "test" })";
+            const std::string nested_type_json_str =  R"(["a", "test", 45])";
+            const std::string root_type_json_str =  R"({   "nested": )" + nested_type_json_str + R"(, "anotherValue": "test" })";
             auto expected = nlohmann::json_with_start_end_markers({{"nested", {"a", "test", 45}}, {"anotherValue", "test"}});
             auto filteredExpected = expected;
             filteredExpected["nested"] = nlohmann::json_with_start_end_markers({"test", 45});
@@ -1788,8 +1787,8 @@ TEST_CASE("parser class")
 
         SECTION("for array with objects")
         {
-            std::string nested_type_json_str =  R"([{"a": 1, "b": "test"}, {"c": 2, "d": "test2"}])";
-            std::string root_type_json_str =  R"({   "nested": )" + nested_type_json_str + R"(, "anotherValue": "test" })";
+            const std::string nested_type_json_str =  R"([{"a": 1, "b": "test"}, {"c": 2, "d": "test2"}])";
+            const std::string root_type_json_str =  R"({   "nested": )" + nested_type_json_str + R"(, "anotherValue": "test" })";
             auto expected = nlohmann::json_with_start_end_markers({{"nested", {{{"a", 1}, {"b", "test"}}, {{"c", 2}, {"d", "test2"}}}}, {"anotherValue", "test"}});
             auto filteredExpected = expected;
             filteredExpected["nested"][0].erase("a");
@@ -1797,15 +1796,15 @@ TEST_CASE("parser class")
 
             auto j = nlohmann::json_with_start_end_markers::parse(root_type_json_str);
             auto nested_array = j["nested"];
-            auto nested_obj = nested_array[0];
+            const auto& nested_obj = nested_array[0];
             CHECK(nested_type_json_str.substr(1, 21) == root_type_json_str.substr(nested_obj.start_position, nested_obj.end_position - nested_obj.start_position));
             CHECK(nested_type_json_str.substr(24, 22) == root_type_json_str.substr(nested_array[1].start_position, nested_array[1].end_position - nested_array[1].start_position));
         }
 
         SECTION("for two levels of nesting objects")
         {
-            std::string nested_type_json_str =  R"({"nested2": {"b": "test"}})";
-            std::string root_type_json_str =  R"({   "a": 2, "nested": )" + nested_type_json_str + R"(, "anotherValue": "test" })";
+            const std::string nested_type_json_str =  R"({"nested2": {"b": "test"}})";
+            const std::string root_type_json_str =  R"({   "a": 2, "nested": )" + nested_type_json_str + R"(, "anotherValue": "test" })";
             auto expected = nlohmann::json_with_start_end_markers({{"a", 2}, {"nested", {{"nested2", {{"b", "test"}}}}}, {"anotherValue", "test"}});
             auto filteredExpected = expected;
             filteredExpected.erase("a");
@@ -1886,8 +1885,8 @@ TEST_CASE("parser class")
 
             SECTION("string type")
             {
-                std::string nested_type_json_str =  R"("test")";
-                std::string root_type_json_str =  R"({ "a": 1,   "nested": )" + nested_type_json_str + R"(, "anotherValue": "test" })";
+                const std::string nested_type_json_str =  R"("test")";
+                const std::string root_type_json_str =  R"({ "a": 1,   "nested": )" + nested_type_json_str + R"(, "anotherValue": "test" })";
                 auto expected = nlohmann::json_with_start_end_markers({{"nested", "test"}, {"anotherValue", "test"}, {"a", 1}});
                 auto filteredExpected = expected;
                 filteredExpected.erase("a");
@@ -1896,8 +1895,8 @@ TEST_CASE("parser class")
 
             SECTION("number type")
             {
-                std::string nested_type_json_str =  R"(2)";
-                std::string root_type_json_str =  R"({ "a": 1,   "nested": )" + nested_type_json_str + R"(, "anotherValue": "test" })";
+                const std::string nested_type_json_str =  R"(2)";
+                const std::string root_type_json_str =  R"({ "a": 1,   "nested": )" + nested_type_json_str + R"(, "anotherValue": "test" })";
                 auto expected = nlohmann::json_with_start_end_markers({{"nested", 2}, {"anotherValue", "test"}, {"a", 1}});
                 auto filteredExpected = expected;
                 filteredExpected.erase("a");
@@ -1906,8 +1905,8 @@ TEST_CASE("parser class")
 
             SECTION("boolean type")
             {
-                std::string nested_type_json_str =  R"(true)";
-                std::string root_type_json_str =  R"({ "a": 1,   "nested": )" + nested_type_json_str + R"(, "anotherValue": "test" })";
+                const std::string nested_type_json_str =  R"(true)";
+                const std::string root_type_json_str =  R"({ "a": 1,   "nested": )" + nested_type_json_str + R"(, "anotherValue": "test" })";
                 auto expected = nlohmann::json_with_start_end_markers({{"nested", true}, {"anotherValue", "test"}, {"a", 1}});
                 auto filteredExpected = expected;
                 filteredExpected.erase("a");
@@ -1916,8 +1915,8 @@ TEST_CASE("parser class")
 
             SECTION("null type")
             {
-                std::string nested_type_json_str =  R"(null)";
-                std::string root_type_json_str =  R"({ "a": 1,   "nested": )" + nested_type_json_str + R"(, "anotherValue": "test" })";
+                const std::string nested_type_json_str =  R"(null)";
+                const std::string root_type_json_str =  R"({ "a": 1,   "nested": )" + nested_type_json_str + R"(, "anotherValue": "test" })";
                 auto expected = nlohmann::json_with_start_end_markers({{"nested", nullptr}, {"anotherValue", "test"}, {"a", 1}});
                 auto filteredExpected = expected;
                 filteredExpected.erase("a");
@@ -1926,20 +1925,20 @@ TEST_CASE("parser class")
         }
         SECTION("with leading whitespace and newlines around root JSON")
         {
-            std::string initial_whitespace = R"(
+            const std::string initial_whitespace = R"(
                 
             )";
-            std::string nested_type_json_str = R"({
+            const std::string nested_type_json_str = R"({
                 "a": 1,
                 "nested": {
                     "b": "test"
                 },
                 "anotherValue": "test"
             })";
-            std::string end_whitespace = R"(
+            const std::string end_whitespace = R"(
                 
             )";
-            std::string root_type_json_str = initial_whitespace + nested_type_json_str + end_whitespace;
+            const std::string root_type_json_str = initial_whitespace + nested_type_json_str + end_whitespace;
 
             auto expected = nlohmann::json_with_start_end_markers({{"a", 1}, {"nested", {{"b", "test"}}}, {"anotherValue", "test"}});
 
