@@ -44,6 +44,10 @@
     #define JSON_DIAGNOSTICS 0
 #endif
 
+#ifndef DIAGNOSTIC_POSITIONS
+    #define DIAGNOSTIC_POSITIONS 0
+#endif
+
 #ifndef JSON_USE_LEGACY_DISCARDED_VALUE_COMPARISON
     #define JSON_USE_LEGACY_DISCARDED_VALUE_COMPARISON 0
 #endif
@@ -52,6 +56,12 @@
     #define NLOHMANN_JSON_ABI_TAG_DIAGNOSTICS _diag
 #else
     #define NLOHMANN_JSON_ABI_TAG_DIAGNOSTICS
+#endif
+
+#if DIAGNOSTIC_POSITIONS
+    #define NLOHMANN_JSON_ABI_TAG_DIAGNOSTIC_POSITIONS _dp
+#else
+    #define NLOHMANN_JSON_ABI_TAG_DIAGNOSTIC_POSITIONS
 #endif
 
 #if JSON_USE_LEGACY_DISCARDED_VALUE_COMPARISON
@@ -65,14 +75,15 @@
 #endif
 
 // Construct the namespace ABI tags component
-#define NLOHMANN_JSON_ABI_TAGS_CONCAT_EX(a, b) json_abi ## a ## b
-#define NLOHMANN_JSON_ABI_TAGS_CONCAT(a, b) \
-    NLOHMANN_JSON_ABI_TAGS_CONCAT_EX(a, b)
+#define NLOHMANN_JSON_ABI_TAGS_CONCAT_EX(a, b, c) json_abi ## a ## b ## c
+#define NLOHMANN_JSON_ABI_TAGS_CONCAT(a, b, c) \
+    NLOHMANN_JSON_ABI_TAGS_CONCAT_EX(a, b, c)
 
 #define NLOHMANN_JSON_ABI_TAGS                                       \
     NLOHMANN_JSON_ABI_TAGS_CONCAT(                                   \
             NLOHMANN_JSON_ABI_TAG_DIAGNOSTICS,                       \
-            NLOHMANN_JSON_ABI_TAG_LEGACY_DISCARDED_VALUE_COMPARISON)
+            NLOHMANN_JSON_ABI_TAG_LEGACY_DISCARDED_VALUE_COMPARISON, \
+            NLOHMANN_JSON_ABI_TAG_DIAGNOSTIC_POSITIONS)
 
 // Construct the namespace version component
 #define NLOHMANN_JSON_NAMESPACE_VERSION_CONCAT_EX(major, minor, patch) \
@@ -116,40 +127,6 @@
     }  /* namespace (inline namespace) NOLINT(readability/namespace) */ \
     }  // namespace nlohmann
 #endif
-
-// #include <nlohmann/detail/json_base_class_with_start_end_markers.hpp>
-//     __ _____ _____ _____
-//  __|  |   __|     |   | |  JSON for Modern C++
-// |  |  |__   |  |  | | | |  version 3.11.3
-// |_____|_____|_____|_|___|  https://github.com/nlohmann/json
-//
-// SPDX-FileCopyrightText: 2013-2023 Niels Lohmann <https://nlohmann.me>
-// SPDX-License-Identifier: MIT
-
-
-
-#include <string> // string::npos
-
-// #include <nlohmann/detail/abi_macros.hpp>
-
-
-NLOHMANN_JSON_NAMESPACE_BEGIN
-namespace detail
-{
-
-/*!
-@brief Custom base struct of the @ref basic_json class.
-This class exposes the start and end positions for all fields of a JSON object
-with reference to the parsed input.
-*/
-struct json_base_class_with_start_end_markers
-{
-    size_t start_position = std::string::npos;
-    size_t end_position = std::string::npos;
-};
-
-}  // namespace detail
-NLOHMANN_JSON_NAMESPACE_END
 
 
 /*!
@@ -205,19 +182,19 @@ struct ordered_map;
 /// @sa https://json.nlohmann.me/api/ordered_json/
 using ordered_json = basic_json<nlohmann::ordered_map>;
 
-/// @brief a minimal specialization that uses the base class json_base_class_with_start_end_markers
-using json_with_start_end_markers = nlohmann::basic_json <
-                                    std::map,
-                                    std::vector,
-                                    std::string,
-                                    bool,
-                                    std::int64_t,
-                                    std::uint64_t,
-                                    double,
-                                    std::allocator,
-                                    nlohmann::adl_serializer,
-                                    std::vector<std::uint8_t>,
-                                    ::nlohmann::detail::json_base_class_with_start_end_markers >;
+// /// @brief a minimal specialization that uses the base class json_base_class_with_start_end_markers
+// using json_with_start_end_markers = nlohmann::basic_json <
+//                                     std::map,
+//                                     std::vector,
+//                                     std::string,
+//                                     bool,
+//                                     std::int64_t,
+//                                     std::uint64_t,
+//                                     double,
+//                                     std::allocator,
+//                                     nlohmann::adl_serializer,
+//                                     std::vector<std::uint8_t>,
+//                                     ::nlohmann::detail::json_base_class_with_start_end_markers >;
 
 NLOHMANN_JSON_NAMESPACE_END
 
