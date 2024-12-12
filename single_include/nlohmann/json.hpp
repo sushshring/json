@@ -3475,20 +3475,6 @@ NLOHMANN_JSON_NAMESPACE_END
     /// @sa https://json.nlohmann.me/api/ordered_json/
     using ordered_json = basic_json<nlohmann::ordered_map>;
 
-    // /// @brief a minimal specialization that uses the base class json_base_class_with_start_end_markers
-    // using json_with_start_end_markers = nlohmann::basic_json <
-    //                                     std::map,
-    //                                     std::vector,
-    //                                     std::string,
-    //                                     bool,
-    //                                     std::int64_t,
-    //                                     std::uint64_t,
-    //                                     double,
-    //                                     std::allocator,
-    //                                     nlohmann::adl_serializer,
-    //                                     std::vector<std::uint8_t>,
-    //                                     ::nlohmann::detail::json_base_class_with_start_end_markers >;
-
     NLOHMANN_JSON_NAMESPACE_END
 
 #endif  // INCLUDE_NLOHMANN_JSON_FWD_HPP_
@@ -8430,40 +8416,7 @@ scan_number_done:
 }  // namespace detail
 NLOHMANN_JSON_NAMESPACE_END
 
-// #include <nlohmann/detail/json_base_class_with_start_end_markers.hpp>
-//     __ _____ _____ _____
-//  __|  |   __|     |   | |  JSON for Modern C++
-// |  |  |__   |  |  | | | |  version 3.11.3
-// |_____|_____|_____|_|___|  https://github.com/nlohmann/json
-//
-// SPDX-FileCopyrightText: 2013-2023 Niels Lohmann <https://nlohmann.me>
-// SPDX-License-Identifier: MIT
-
-
-
-#include <string> // string::npos
-
-// #include <nlohmann/detail/abi_macros.hpp>
-
-
-NLOHMANN_JSON_NAMESPACE_BEGIN
-namespace detail
-{
-
-/*!
-@brief Custom base struct of the @ref basic_json class.
-This class exposes the start and end positions for all fields of a JSON object
-with reference to the parsed input.
-*/
-struct json_base_class_with_start_end_markers
-{
-    size_t start_position = std::string::npos;
-    size_t end_position = std::string::npos;
-};
-
-}  // namespace detail
-NLOHMANN_JSON_NAMESPACE_END
-
+#include <nlohmann/detail/json_base_class_with_start_end_markers.hpp>
 NLOHMANN_JSON_NAMESPACE_BEGIN
 
 /*!
@@ -8909,7 +8862,7 @@ class json_sax_dom_callback_parser
     using lexer_t = lexer<BasicJsonType, InputAdapterType>;
 
     json_sax_dom_callback_parser(BasicJsonType& r,
-                                 const parser_callback_t cb, // NOLINT(performance-unnecessary-value-param)
+                                 const parser_callback_t cb,
                                  const bool allow_exceptions_ = true,
                                  lexer_t* lexer_ = nullptr)
         : root(r), callback(std::move(cb)), allow_exceptions(allow_exceptions_), m_lexer_ref(lexer_)

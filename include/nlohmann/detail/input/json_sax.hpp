@@ -464,7 +464,7 @@ class json_sax_dom_callback_parser
     using lexer_t = lexer<BasicJsonType, InputAdapterType>;
 
     json_sax_dom_callback_parser(BasicJsonType& r,
-                                 const parser_callback_t cb, // NOLINT(performance-unnecessary-value-param)
+                                 const parser_callback_t cb,
                                  const bool allow_exceptions_ = true,
                                  lexer_t* lexer_ = nullptr)
         : root(r), callback(std::move(cb)), allow_exceptions(allow_exceptions_), m_lexer_ref(lexer_)
