@@ -893,6 +893,11 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
                 JSON_ASSERT(false); // NOLINT(cert-dcl03-c,hicpp-static-assert,misc-static-assert) LCOV_EXCL_LINE
         }
         JSON_ASSERT(m_data.m_type == val.type());
+
+#if DIAGNOSTIC_POSITIONS
+        start_position = val.start_position;
+        end_position = val.end_position;
+#endif
         set_parents();
         assert_invariant();
     }
@@ -1204,15 +1209,24 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
             default:
                 break;
         }
+#if DIAGNOSTIC_POSITIONS
+        start_position = other.start_position;
+        end_position = other.end_position;
+#endif
 
         set_parents();
         assert_invariant();
+
     }
 
     /// @brief move constructor
     /// @sa https://json.nlohmann.me/api/basic_json/basic_json/
     basic_json(basic_json&& other) noexcept
         : json_base_class_t(std::forward<json_base_class_t>(other)),
+#if DIAGNOSTIC_POSITIONS
+          start_position(other.start_position),
+          end_position(other.end_position),
+#endif
           m_data(std::move(other.m_data))
     {
         // check that passed value is valid
@@ -1221,6 +1235,11 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         // invalidate payload
         other.m_data.m_type = value_t::null;
         other.m_data.m_value = {};
+
+#if DIAGNOSTIC_POSITIONS
+        other.start_position = std::string::npos;
+        other.end_position = std::string::npos;
+#endif
 
         set_parents();
         assert_invariant();
@@ -1242,6 +1261,10 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         using std::swap;
         swap(m_data.m_type, other.m_data.m_type);
         swap(m_data.m_value, other.m_data.m_value);
+#if DIAGNOSTIC_POSITIONS
+        swap(start_position, other.start_position);
+        swap(end_position, other.end_position);
+#endif
         json_base_class_t::operator=(std::move(other));
 
         set_parents();
@@ -1393,6 +1416,24 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     {
         return m_data.m_type;
     }
+
+#if DIAGNOSTIC_POSITIONS
+    constexpr size_t start_pos() const noexcept
+    {
+        return start_position;
+    }
+
+    constexpr size_t end_pos() const noexcept
+    {
+        return end_position;
+    }
+  private:
+    /// the start position of the value
+    size_t start_position = std::string::npos;
+    /// the end position of the value
+    size_t end_position = std::string::npos;
+
+#endif
 
     /// @}
 
