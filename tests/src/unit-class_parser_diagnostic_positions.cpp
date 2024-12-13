@@ -7,14 +7,13 @@
 // SPDX-License-Identifier: MIT
 
 #include "doctest_compatibility.h"
+#define JSON_TESTS_PRIVATE
 #ifdef JSON_DIAGNOSTIC_POSITIONS
     #undef JSON_DIAGNOSTIC_POSITIONS
 #endif
 
 #define JSON_DIAGNOSTIC_POSITIONS 1
-#define JSON_TESTS_PRIVATE
 #include <nlohmann/json.hpp>
-#include <nlohmann/json_fwd.hpp>
 using nlohmann::json;
 
 #ifdef JSON_TEST_NO_GLOBAL_UDLS
