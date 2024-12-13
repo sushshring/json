@@ -4251,6 +4251,10 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
 #endif
 
 #if JSON_DIAGNOSTIC_POSITIONS
+    /// the start position of the value
+    size_t start_position = std::string::npos;
+    /// the end position of the value
+    size_t end_position = std::string::npos;
   public:
     constexpr size_t start_pos() const noexcept
     {
@@ -4261,11 +4265,6 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     {
         return end_position;
     }
-  private:
-    /// the start position of the value
-    size_t start_position = std::string::npos;
-    /// the end position of the value
-    size_t end_position = std::string::npos;
 #endif
 
     //////////////////////////////////////////
