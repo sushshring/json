@@ -7,11 +7,11 @@
 // SPDX-License-Identifier: MIT
 
 #include "doctest_compatibility.h"
-#ifdef DIAGNOSTIC_POSITIONS
-    #undef DIAGNOSTIC_POSITIONS
+#ifdef JSON_DIAGNOSTIC_POSITIONS
+    #undef JSON_DIAGNOSTIC_POSITIONS
 #endif
 
-#define DIAGNOSTIC_POSITIONS 1
+#define JSON_DIAGNOSTIC_POSITIONS 1
 #define JSON_TESTS_PRIVATE
 #include <nlohmann/json.hpp>
 #include <nlohmann/json_fwd.hpp>
@@ -225,8 +225,7 @@ json parser_helper(const std::string& s)
     CHECK(j_nothrow == j);
 
     json j_sax;
-    auto ia = nlohmann::detail::input_adapter(s);
-    nlohmann::detail::json_sax_dom_parser<json, decltype(ia)> sdp(j_sax);
+    nlohmann::detail::json_sax_dom_parser<json, nlohmann::detail::string_input_adapter_type> sdp(j_sax);
     json::sax_parse(s, &sdp);
     CHECK(j_sax == j);
 

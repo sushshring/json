@@ -18,6 +18,7 @@
 #include <nlohmann/detail/macro_scope.hpp>
 #include <nlohmann/detail/string_concat.hpp>
 #include <nlohmann/detail/input/lexer.hpp>
+
 NLOHMANN_JSON_NAMESPACE_BEGIN
 
 /*!
@@ -231,7 +232,7 @@ class json_sax_dom_parser
     {
         ref_stack.push_back(handle_value(BasicJsonType::value_t::object));
 
-#if DIAGNOSTIC_POSITIONS
+#if JSON_DIAGNOSTIC_POSITIONS
         // Manually set the start position of the object here.
         // Ensure this is after the call to handle_value to ensure correct start position.
         if (m_lexer_ref)
@@ -265,7 +266,7 @@ class json_sax_dom_parser
         JSON_ASSERT(!ref_stack.empty());
         JSON_ASSERT(ref_stack.back()->is_object());
 
-#if DIAGNOSTIC_POSITIONS
+#if JSON_DIAGNOSTIC_POSITIONS
         if (m_lexer_ref)
         {
             ref_stack.back()->end_position = m_lexer_ref->get_position();
@@ -281,7 +282,7 @@ class json_sax_dom_parser
     {
         ref_stack.push_back(handle_value(BasicJsonType::value_t::array));
 
-#if DIAGNOSTIC_POSITIONS
+#if JSON_DIAGNOSTIC_POSITIONS
         // Manually set the start position of the array here.
         // Ensure this is after the call to handle_value to ensure correct start position.
         if (m_lexer_ref)
@@ -303,7 +304,7 @@ class json_sax_dom_parser
         JSON_ASSERT(!ref_stack.empty());
         JSON_ASSERT(ref_stack.back()->is_array());
 
-#if DIAGNOSTIC_POSITIONS
+#if JSON_DIAGNOSTIC_POSITIONS
         if (m_lexer_ref)
         {
             ref_stack.back()->end_position = m_lexer_ref->get_position();
@@ -334,7 +335,8 @@ class json_sax_dom_parser
     }
 
   private:
-#if DIAGNOSTIC_POSITIONS
+
+#if JSON_DIAGNOSTIC_POSITIONS
     void handle_diagnostic_positions_for_json_value(BasicJsonType& v)
     {
         if (m_lexer_ref)
@@ -394,6 +396,7 @@ class json_sax_dom_parser
         }
     }
 #endif
+
     /*!
     @invariant If the ref stack is empty, then the passed value will be the new
                root.
@@ -408,7 +411,7 @@ class json_sax_dom_parser
         {
             root = BasicJsonType(std::forward<Value>(v));
 
-#if DIAGNOSTIC_POSITIONS
+#if JSON_DIAGNOSTIC_POSITIONS
             handle_diagnostic_positions_for_json_value(root);
 #endif
 
@@ -420,18 +423,22 @@ class json_sax_dom_parser
         if (ref_stack.back()->is_array())
         {
             ref_stack.back()->m_data.m_value.array->emplace_back(std::forward<Value>(v));
-#if DIAGNOSTIC_POSITIONS
+
+#if JSON_DIAGNOSTIC_POSITIONS
             handle_diagnostic_positions_for_json_value(ref_stack.back()->m_data.m_value.array->back());
 #endif
+
             return &(ref_stack.back()->m_data.m_value.array->back());
         }
 
         JSON_ASSERT(ref_stack.back()->is_object());
         JSON_ASSERT(object_element);
         *object_element = BasicJsonType(std::forward<Value>(v));
-#if DIAGNOSTIC_POSITIONS
+
+#if JSON_DIAGNOSTIC_POSITIONS
         handle_diagnostic_positions_for_json_value(*object_element);
 #endif
+
         return object_element;
     }
 
@@ -463,7 +470,7 @@ class json_sax_dom_callback_parser
     using lexer_t = lexer<BasicJsonType, InputAdapterType>;
 
     json_sax_dom_callback_parser(BasicJsonType& r,
-                                 const parser_callback_t cb,
+                                 parser_callback_t cb,
                                  const bool allow_exceptions_ = true,
                                  lexer_t* lexer_ = nullptr)
         : root(r), callback(std::move(cb)), allow_exceptions(allow_exceptions_), m_lexer_ref(lexer_)
@@ -531,7 +538,8 @@ class json_sax_dom_callback_parser
 
         if (ref_stack.back())
         {
-#if DIAGNOSTIC_POSITIONS
+
+#if JSON_DIAGNOSTIC_POSITIONS
             // Manually set the start position of the object here.
             // Ensure this is after the call to handle_value to ensure correct start position.
             if (m_lexer_ref)
@@ -579,12 +587,14 @@ class json_sax_dom_callback_parser
             }
             else
             {
-#if DIAGNOSTIC_POSITIONS
+
+#if JSON_DIAGNOSTIC_POSITIONS
                 if (m_lexer_ref)
                 {
                     ref_stack.back()->end_position = m_lexer_ref->get_position();
                 }
 #endif
+
                 ref_stack.back()->set_parents();
             }
         }
@@ -620,7 +630,8 @@ class json_sax_dom_callback_parser
 
         if (ref_stack.back())
         {
-#if DIAGNOSTIC_POSITIONS
+
+#if JSON_DIAGNOSTIC_POSITIONS
             // Manually set the start position of the array here.
             // Ensure this is after the call to handle_value to ensure correct start position.
             if (m_lexer_ref)
@@ -650,12 +661,14 @@ class json_sax_dom_callback_parser
             keep = callback(static_cast<int>(ref_stack.size()) - 1, parse_event_t::array_end, *ref_stack.back());
             if (keep)
             {
-#if DIAGNOSTIC_POSITIONS
+
+#if JSON_DIAGNOSTIC_POSITIONS
                 if (m_lexer_ref)
                 {
                     ref_stack.back()->end_position = m_lexer_ref->get_position();
                 }
 #endif
+
                 ref_stack.back()->set_parents();
             }
             else
@@ -699,7 +712,7 @@ class json_sax_dom_callback_parser
 
   private:
 
-#if DIAGNOSTIC_POSITIONS
+#if JSON_DIAGNOSTIC_POSITIONS
     void handle_diagnostic_positions_for_json_value(BasicJsonType& v)
     {
         if (m_lexer_ref)
@@ -789,7 +802,8 @@ class json_sax_dom_callback_parser
 
         // create value
         auto value = BasicJsonType(std::forward<Value>(v));
-#if DIAGNOSTIC_POSITIONS
+
+#if JSON_DIAGNOSTIC_POSITIONS
         handle_diagnostic_positions_for_json_value(value);
 #endif
 
