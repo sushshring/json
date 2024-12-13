@@ -11,7 +11,7 @@ int main()
     {
         "address": {
             "street": "Fake Street",
-            "housenumber": "12"
+            "housenumber": 1
         }
     }
     )";

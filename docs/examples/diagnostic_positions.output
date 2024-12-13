@@ -1,10 +1,10 @@
 Root diagnostic positions:
         start_pos: 5
-        end_pos:112
+        end_pos:109
 
 address diagnostic positions:
         start_pos:26
-        end_pos:106
+        end_pos:103
 
 street diagnostic positions:
         start_pos:50
@@ -12,4 +12,4 @@ street diagnostic positions:
 
 housenumber diagnostic positions:
         start_pos:92
-        end_pos:96
+        end_pos:93
