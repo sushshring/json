@@ -418,7 +418,7 @@ typename container_input_adapter_factory_impl::container_input_adapter_factory<C
 }
 
 // specialization for std::string
-using string_input_adapter = decltype(input_adapter(std::declval<std::string>()));
+using string_input_adapter_type = decltype(input_adapter(std::declval<std::string>()));
 
 #ifndef JSON_NO_IO
 // Special cases with fast paths

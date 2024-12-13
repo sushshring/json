@@ -73,8 +73,8 @@
     #define JSON_DIAGNOSTICS 0
 #endif
 
-#ifndef DIAGNOSTIC_POSITIONS
-    #define DIAGNOSTIC_POSITIONS 0
+#ifndef JSON_DIAGNOSTIC_POSITIONS
+    #define JSON_DIAGNOSTIC_POSITIONS 0
 #endif
 
 #ifndef JSON_USE_LEGACY_DISCARDED_VALUE_COMPARISON
@@ -87,10 +87,10 @@
     #define NLOHMANN_JSON_ABI_TAG_DIAGNOSTICS
 #endif
 
-#if DIAGNOSTIC_POSITIONS
-    #define NLOHMANN_JSON_ABI_TAG_DIAGNOSTIC_POSITIONS _dp
+#if JSON_DIAGNOSTIC_POSITIONS
+    #define NLOHMANN_JSON_ABI_TAG_JSON_DIAGNOSTIC_POSITIONS _dp
 #else
-    #define NLOHMANN_JSON_ABI_TAG_DIAGNOSTIC_POSITIONS
+    #define NLOHMANN_JSON_ABI_TAG_JSON_DIAGNOSTIC_POSITIONS
 #endif
 
 #if JSON_USE_LEGACY_DISCARDED_VALUE_COMPARISON
@@ -112,7 +112,7 @@
     NLOHMANN_JSON_ABI_TAGS_CONCAT(                                   \
             NLOHMANN_JSON_ABI_TAG_DIAGNOSTICS,                       \
             NLOHMANN_JSON_ABI_TAG_LEGACY_DISCARDED_VALUE_COMPARISON, \
-            NLOHMANN_JSON_ABI_TAG_DIAGNOSTIC_POSITIONS)
+            NLOHMANN_JSON_ABI_TAG_JSON_DIAGNOSTIC_POSITIONS)
 
 // Construct the namespace version component
 #define NLOHMANN_JSON_NAMESPACE_VERSION_CONCAT_EX(major, minor, patch) \
@@ -6659,7 +6659,7 @@ typename container_input_adapter_factory_impl::container_input_adapter_factory<C
 }
 
 // specialization for std::string
-using string_input_adapter = decltype(input_adapter(std::declval<std::string>()));
+using string_input_adapter_type = decltype(input_adapter(std::declval<std::string>()));
 
 #ifndef JSON_NO_IO
 // Special cases with fast paths
@@ -8416,6 +8416,7 @@ scan_number_done:
 }  // namespace detail
 NLOHMANN_JSON_NAMESPACE_END
 
+
 NLOHMANN_JSON_NAMESPACE_BEGIN
 
 /*!
@@ -8629,7 +8630,7 @@ class json_sax_dom_parser
     {
         ref_stack.push_back(handle_value(BasicJsonType::value_t::object));
 
-#if DIAGNOSTIC_POSITIONS
+#if JSON_DIAGNOSTIC_POSITIONS
         // Manually set the start position of the object here.
         // Ensure this is after the call to handle_value to ensure correct start position.
         if (m_lexer_ref)
@@ -8663,7 +8664,7 @@ class json_sax_dom_parser
         JSON_ASSERT(!ref_stack.empty());
         JSON_ASSERT(ref_stack.back()->is_object());
 
-#if DIAGNOSTIC_POSITIONS
+#if JSON_DIAGNOSTIC_POSITIONS
         if (m_lexer_ref)
         {
             ref_stack.back()->end_position = m_lexer_ref->get_position();
@@ -8679,7 +8680,7 @@ class json_sax_dom_parser
     {
         ref_stack.push_back(handle_value(BasicJsonType::value_t::array));
 
-#if DIAGNOSTIC_POSITIONS
+#if JSON_DIAGNOSTIC_POSITIONS
         // Manually set the start position of the array here.
         // Ensure this is after the call to handle_value to ensure correct start position.
         if (m_lexer_ref)
@@ -8701,7 +8702,7 @@ class json_sax_dom_parser
         JSON_ASSERT(!ref_stack.empty());
         JSON_ASSERT(ref_stack.back()->is_array());
 
-#if DIAGNOSTIC_POSITIONS
+#if JSON_DIAGNOSTIC_POSITIONS
         if (m_lexer_ref)
         {
             ref_stack.back()->end_position = m_lexer_ref->get_position();
@@ -8732,7 +8733,8 @@ class json_sax_dom_parser
     }
 
   private:
-#if DIAGNOSTIC_POSITIONS
+
+#if JSON_DIAGNOSTIC_POSITIONS
     void handle_diagnostic_positions_for_json_value(BasicJsonType& v)
     {
         if (m_lexer_ref)
@@ -8792,6 +8794,7 @@ class json_sax_dom_parser
         }
     }
 #endif
+
     /*!
     @invariant If the ref stack is empty, then the passed value will be the new
                root.
@@ -8806,7 +8809,7 @@ class json_sax_dom_parser
         {
             root = BasicJsonType(std::forward<Value>(v));
 
-#if DIAGNOSTIC_POSITIONS
+#if JSON_DIAGNOSTIC_POSITIONS
             handle_diagnostic_positions_for_json_value(root);
 #endif
 
@@ -8818,18 +8821,22 @@ class json_sax_dom_parser
         if (ref_stack.back()->is_array())
         {
             ref_stack.back()->m_data.m_value.array->emplace_back(std::forward<Value>(v));
-#if DIAGNOSTIC_POSITIONS
+
+#if JSON_DIAGNOSTIC_POSITIONS
             handle_diagnostic_positions_for_json_value(ref_stack.back()->m_data.m_value.array->back());
 #endif
+
             return &(ref_stack.back()->m_data.m_value.array->back());
         }
 
         JSON_ASSERT(ref_stack.back()->is_object());
         JSON_ASSERT(object_element);
         *object_element = BasicJsonType(std::forward<Value>(v));
-#if DIAGNOSTIC_POSITIONS
+
+#if JSON_DIAGNOSTIC_POSITIONS
         handle_diagnostic_positions_for_json_value(*object_element);
 #endif
+
         return object_element;
     }
 
@@ -8861,7 +8868,7 @@ class json_sax_dom_callback_parser
     using lexer_t = lexer<BasicJsonType, InputAdapterType>;
 
     json_sax_dom_callback_parser(BasicJsonType& r,
-                                 const parser_callback_t cb,
+                                 parser_callback_t cb,
                                  const bool allow_exceptions_ = true,
                                  lexer_t* lexer_ = nullptr)
         : root(r), callback(std::move(cb)), allow_exceptions(allow_exceptions_), m_lexer_ref(lexer_)
@@ -8929,7 +8936,8 @@ class json_sax_dom_callback_parser
 
         if (ref_stack.back())
         {
-#if DIAGNOSTIC_POSITIONS
+
+#if JSON_DIAGNOSTIC_POSITIONS
             // Manually set the start position of the object here.
             // Ensure this is after the call to handle_value to ensure correct start position.
             if (m_lexer_ref)
@@ -8977,12 +8985,14 @@ class json_sax_dom_callback_parser
             }
             else
             {
-#if DIAGNOSTIC_POSITIONS
+
+#if JSON_DIAGNOSTIC_POSITIONS
                 if (m_lexer_ref)
                 {
                     ref_stack.back()->end_position = m_lexer_ref->get_position();
                 }
 #endif
+
                 ref_stack.back()->set_parents();
             }
         }
@@ -9018,7 +9028,8 @@ class json_sax_dom_callback_parser
 
         if (ref_stack.back())
         {
-#if DIAGNOSTIC_POSITIONS
+
+#if JSON_DIAGNOSTIC_POSITIONS
             // Manually set the start position of the array here.
             // Ensure this is after the call to handle_value to ensure correct start position.
             if (m_lexer_ref)
@@ -9048,12 +9059,14 @@ class json_sax_dom_callback_parser
             keep = callback(static_cast<int>(ref_stack.size()) - 1, parse_event_t::array_end, *ref_stack.back());
             if (keep)
             {
-#if DIAGNOSTIC_POSITIONS
+
+#if JSON_DIAGNOSTIC_POSITIONS
                 if (m_lexer_ref)
                 {
                     ref_stack.back()->end_position = m_lexer_ref->get_position();
                 }
 #endif
+
                 ref_stack.back()->set_parents();
             }
             else
@@ -9097,7 +9110,7 @@ class json_sax_dom_callback_parser
 
   private:
 
-#if DIAGNOSTIC_POSITIONS
+#if JSON_DIAGNOSTIC_POSITIONS
     void handle_diagnostic_positions_for_json_value(BasicJsonType& v)
     {
         if (m_lexer_ref)
@@ -9187,7 +9200,8 @@ class json_sax_dom_callback_parser
 
         // create value
         auto value = BasicJsonType(std::forward<Value>(v));
-#if DIAGNOSTIC_POSITIONS
+
+#if JSON_DIAGNOSTIC_POSITIONS
         handle_diagnostic_positions_for_json_value(value);
 #endif
 
@@ -20536,10 +20550,11 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         }
         JSON_ASSERT(m_data.m_type == val.type());
 
-#if DIAGNOSTIC_POSITIONS
+#if JSON_DIAGNOSTIC_POSITIONS
         start_position = val.start_position;
         end_position = val.end_position;
 #endif
+
         set_parents();
         assert_invariant();
     }
@@ -20851,25 +20866,25 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
             default:
                 break;
         }
-#if DIAGNOSTIC_POSITIONS
+
+#if JSON_DIAGNOSTIC_POSITIONS
         start_position = other.start_position;
         end_position = other.end_position;
 #endif
 
         set_parents();
         assert_invariant();
-
     }
 
     /// @brief move constructor
     /// @sa https://json.nlohmann.me/api/basic_json/basic_json/
     basic_json(basic_json&& other) noexcept
         : json_base_class_t(std::forward<json_base_class_t>(other)),
-#if DIAGNOSTIC_POSITIONS
-          start_position(other.start_position),
-          end_position(other.end_position),
-#endif
           m_data(std::move(other.m_data))
+#if JSON_DIAGNOSTIC_POSITIONS
+        , start_position(other.start_position),
+          end_position(other.end_position)
+#endif
     {
         // check that passed value is valid
         other.assert_invariant(false);
@@ -20878,7 +20893,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         other.m_data.m_type = value_t::null;
         other.m_data.m_value = {};
 
-#if DIAGNOSTIC_POSITIONS
+#if JSON_DIAGNOSTIC_POSITIONS
         other.start_position = std::string::npos;
         other.end_position = std::string::npos;
 #endif
@@ -20903,10 +20918,12 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         using std::swap;
         swap(m_data.m_type, other.m_data.m_type);
         swap(m_data.m_value, other.m_data.m_value);
-#if DIAGNOSTIC_POSITIONS
+
+#if JSON_DIAGNOSTIC_POSITIONS
         swap(start_position, other.start_position);
         swap(end_position, other.end_position);
 #endif
+
         json_base_class_t::operator=(std::move(other));
 
         set_parents();
@@ -21058,24 +21075,6 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     {
         return m_data.m_type;
     }
-
-#if DIAGNOSTIC_POSITIONS
-    constexpr size_t start_pos() const noexcept
-    {
-        return start_position;
-    }
-
-    constexpr size_t end_pos() const noexcept
-    {
-        return end_position;
-    }
-  private:
-    /// the start position of the value
-    size_t start_position = std::string::npos;
-    /// the end position of the value
-    size_t end_position = std::string::npos;
-
-#endif
 
     /// @}
 
@@ -23905,6 +23904,23 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
 #if JSON_DIAGNOSTICS
     /// a pointer to a parent value (for debugging purposes)
     basic_json* m_parent = nullptr;
+#endif
+
+#if JSON_DIAGNOSTIC_POSITIONS
+    /// the start position of the value
+    size_t start_position = std::string::npos;
+    /// the end position of the value
+    size_t end_position = std::string::npos;
+  public:
+    constexpr size_t start_pos() const noexcept
+    {
+        return start_position;
+    }
+
+    constexpr size_t end_pos() const noexcept
+    {
+        return end_position;
+    }
 #endif
 
     //////////////////////////////////////////
