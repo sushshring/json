@@ -268,6 +268,7 @@ class json_sax_dom_parser
 #if JSON_DIAGNOSTIC_POSITIONS
         if (m_lexer_ref)
         {
+            // Lexer's position is past the closing brace, so set that as the end position.
             ref_stack.back()->end_position = m_lexer_ref->get_position();
         }
 #endif
@@ -306,6 +307,7 @@ class json_sax_dom_parser
 #if JSON_DIAGNOSTIC_POSITIONS
         if (m_lexer_ref)
         {
+            // Lexer's position is past the closing bracket, so set that as the end position.
             ref_stack.back()->end_position = m_lexer_ref->get_position();
         }
 #endif
@@ -340,6 +342,9 @@ class json_sax_dom_parser
     {
         if (m_lexer_ref)
         {
+            // Lexer has read past the current field value, so set the end position to the current position.
+            // The start position will be set below based on the length of the string representation
+            // of the value.
             v.end_position = m_lexer_ref->get_position();
 
             switch (v.type())
@@ -590,6 +595,7 @@ class json_sax_dom_callback_parser
 #if JSON_DIAGNOSTIC_POSITIONS
                 if (m_lexer_ref)
                 {
+                    // Lexer's position is past the closing brace, so set that as the end position.
                     ref_stack.back()->end_position = m_lexer_ref->get_position();
                 }
 #endif
@@ -664,6 +670,7 @@ class json_sax_dom_callback_parser
 #if JSON_DIAGNOSTIC_POSITIONS
                 if (m_lexer_ref)
                 {
+                    // Lexer's position is past the closing bracket, so set that as the end position.
                     ref_stack.back()->end_position = m_lexer_ref->get_position();
                 }
 #endif
@@ -716,6 +723,9 @@ class json_sax_dom_callback_parser
     {
         if (m_lexer_ref)
         {
+            // Lexer has read past the current field value, so set the end position to the current position.
+            // The start position will be set below based on the length of the string representation
+            // of the value.
             v.end_position = m_lexer_ref->get_position();
 
             switch (v.type())

@@ -10,9 +10,12 @@ When enabled, two new properties: `start_pos()` and `end_pos()` are added to `nl
 that JSON object/field in the original string the object was parsed from. Likewise, `end_pos()` returns the end position of that JSON object/field in the
 original string the object was parsed from.
 
-For objects and arrays, the start and end positions represent the positions of the opening and closing braces or brackets, respectively. For fields, the start
-and end positions represent either the opening and closing quotes for that field's value or the first and character after last in the field's numerical or
-predefined true/false/null values.
+For objects and arrays, the start position represents the position of the opening brace or bracket. The end position is the character after the closing
+brace or bracket. For fields, the start position represents the opening quote or first character in field's numerical or predefined (true/false/null) value,
+the end position represents the character after the closing quote or the character after the last character in the field's numerical or predefined value.
+
+Given the above, `end_pos() - start_pos()` for an object or field provides the length of the string representation for that object or field, including the
+opening or closing braces, brackets, or quotes.
 
 `start_pos()` and `end_pos()` are only set if the JSON object was parsed using `json::parse()`. For all other cases, `std::string::npos` will be returned.
 
