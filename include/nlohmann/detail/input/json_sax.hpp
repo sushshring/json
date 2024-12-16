@@ -10,15 +10,14 @@
 
 #include <cstddef>
 #include <string> // string
+#include <type_traits> // enable_if_t
 #include <utility> // move
 #include <vector> // vector
-#include <type_traits> // enable_if_t
 
 #include <nlohmann/detail/exceptions.hpp>
+#include <nlohmann/detail/input/lexer.hpp>
 #include <nlohmann/detail/macro_scope.hpp>
 #include <nlohmann/detail/string_concat.hpp>
-#include <nlohmann/detail/input/lexer.hpp>
-
 NLOHMANN_JSON_NAMESPACE_BEGIN
 
 /*!

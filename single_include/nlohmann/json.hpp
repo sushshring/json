@@ -88,9 +88,9 @@
 #endif
 
 #if JSON_DIAGNOSTIC_POSITIONS
-    #define NLOHMANN_JSON_ABI_TAG_JSON_DIAGNOSTIC_POSITIONS _dp
+    #define NLOHMANN_JSON_ABI_TAG_DIAGNOSTIC_POSITIONS _dp
 #else
-    #define NLOHMANN_JSON_ABI_TAG_JSON_DIAGNOSTIC_POSITIONS
+    #define NLOHMANN_JSON_ABI_TAG_DIAGNOSTIC_POSITIONS
 #endif
 
 #if JSON_USE_LEGACY_DISCARDED_VALUE_COMPARISON
@@ -112,7 +112,7 @@
     NLOHMANN_JSON_ABI_TAGS_CONCAT(                                   \
             NLOHMANN_JSON_ABI_TAG_DIAGNOSTICS,                       \
             NLOHMANN_JSON_ABI_TAG_LEGACY_DISCARDED_VALUE_COMPARISON, \
-            NLOHMANN_JSON_ABI_TAG_JSON_DIAGNOSTIC_POSITIONS)
+            NLOHMANN_JSON_ABI_TAG_DIAGNOSTIC_POSITIONS)
 
 // Construct the namespace version component
 #define NLOHMANN_JSON_NAMESPACE_VERSION_CONCAT_EX(major, minor, patch) \
@@ -6757,15 +6757,11 @@ NLOHMANN_JSON_NAMESPACE_END
 
 #include <cstddef>
 #include <string> // string
+#include <type_traits> // enable_if_t
 #include <utility> // move
 #include <vector> // vector
-#include <type_traits> // enable_if_t
 
 // #include <nlohmann/detail/exceptions.hpp>
-
-// #include <nlohmann/detail/macro_scope.hpp>
-
-// #include <nlohmann/detail/string_concat.hpp>
 
 // #include <nlohmann/detail/input/lexer.hpp>
 //     __ _____ _____ _____
@@ -8416,6 +8412,9 @@ scan_number_done:
 }  // namespace detail
 NLOHMANN_JSON_NAMESPACE_END
 
+// #include <nlohmann/detail/macro_scope.hpp>
+
+// #include <nlohmann/detail/string_concat.hpp>
 
 NLOHMANN_JSON_NAMESPACE_BEGIN
 
@@ -20503,6 +20502,10 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
                detail::enable_if_t <
                    detail::is_basic_json<BasicJsonType>::value&& !std::is_same<basic_json, BasicJsonType>::value, int > = 0 >
     basic_json(const BasicJsonType& val)
+#if JSON_DIAGNOSTIC_POSITIONS
+        : start_position(val.start_position),
+          end_position(val.end_position)
+#endif
     {
         using other_boolean_t = typename BasicJsonType::boolean_t;
         using other_number_float_t = typename BasicJsonType::number_float_t;
@@ -20549,11 +20552,6 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
                 JSON_ASSERT(false); // NOLINT(cert-dcl03-c,hicpp-static-assert,misc-static-assert) LCOV_EXCL_LINE
         }
         JSON_ASSERT(m_data.m_type == val.type());
-
-#if JSON_DIAGNOSTIC_POSITIONS
-        start_position = val.start_position;
-        end_position = val.end_position;
-#endif
 
         set_parents();
         assert_invariant();
@@ -20806,6 +20804,10 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
     /// @sa https://json.nlohmann.me/api/basic_json/basic_json/
     basic_json(const basic_json& other)
         : json_base_class_t(other)
+#if JSON_DIAGNOSTIC_POSITIONS
+        , start_position(other.start_position)
+        , end_position(other.end_position)
+#endif
     {
         m_data.m_type = other.m_data.m_type;
         // check of passed value is valid
@@ -20867,11 +20869,6 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
                 break;
         }
 
-#if JSON_DIAGNOSTIC_POSITIONS
-        start_position = other.start_position;
-        end_position = other.end_position;
-#endif
-
         set_parents();
         assert_invariant();
     }
@@ -20882,8 +20879,8 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         : json_base_class_t(std::forward<json_base_class_t>(other)),
           m_data(std::move(other.m_data))
 #if JSON_DIAGNOSTIC_POSITIONS
-        , start_position(other.start_position),
-          end_position(other.end_position)
+        , start_position(other.start_position)
+        , end_position(other.end_position)
 #endif
     {
         // check that passed value is valid

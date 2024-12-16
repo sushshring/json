@@ -1,15 +1,16 @@
-Root diagnostic positions:
-        start_pos: 5
-        end_pos:109
+Root diagnostic positions: 
+	start_pos: 5
+	end_pos:109
 
-address diagnostic positions:
-        start_pos:26
-        end_pos:103
+address diagnostic positions: 
+	start_pos:26
+	end_pos:103
 
-street diagnostic positions:
-        start_pos:50
-        end_pos:63
+street diagnostic positions: 
+	start_pos:50
+	end_pos:63
 
-housenumber diagnostic positions:
-        start_pos:92
-        end_pos:93
+housenumber diagnostic positions: 
+	start_pos:92
+	end_pos:93
+
