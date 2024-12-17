@@ -6,7 +6,7 @@
 
 This macro enables position diagnostics for generated JSON objects.
 
-When enabled, two new properties: `start_pos()` and `end_pos()` are added to `nlohmann::json` objects and fields. `start_pos()` returns the start position of
+When enabled, two new properties: `start_pos()` and `end_pos()` are added to `nlohmann::basic_json` objects and fields. `start_pos()` returns the start position of
 that JSON object/field in the original string the object was parsed from. Likewise, `end_pos()` returns the end position of that JSON object/field in the
 original string the object was parsed from.
 
@@ -17,9 +17,9 @@ the end position represents the character after the closing quote or the charact
 Given the above, `end_pos() - start_pos()` for an object or field provides the length of the string representation for that object or field, including the
 opening or closing braces, brackets, or quotes.
 
-`start_pos()` and `end_pos()` are only set if the JSON object was parsed using `json::parse()`. For all other cases, `std::string::npos` will be returned.
+`start_pos()` and `end_pos()` are only set if the JSON object was parsed using `parse()`. For all other cases, `std::string::npos` will be returned.
 
-Note that enabling this macro increases the size of every JSON value by two size_t fields and adds
+Note that enabling this macro increases the size of every JSON value by two `std::size_t` fields and adds
 slight runtime overhead.
 
 ## Default definition
