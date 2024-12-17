@@ -370,8 +370,10 @@ class json_sax_dom_parser
                     break;
                 }
 
-                // As we handle the start and end positions for values before calling the callback
-                // we do not expect this to be called.
+                // As we handle the start and end positions for values created during parsing,
+                // we do not expect the following value type to be called. Regardless, set the positions
+                // in case this is created manually or through a different constructor. Exclude from lcov
+                // since the exact condition of this switch is esoteric.
                 // LCOV_EXCL_START
                 case value_t::discarded:
                 {
@@ -594,6 +596,11 @@ class json_sax_dom_callback_parser
             {
                 // discard object
                 *ref_stack.back() = discarded;
+
+#if JSON_DIAGNOSTIC_POSITIONS
+                // Set start/end positions for discarded object.
+                handle_diagnostic_positions_for_json_value(*ref_stack.back());
+#endif
             }
             else
             {
@@ -687,6 +694,11 @@ class json_sax_dom_callback_parser
             {
                 // discard array
                 *ref_stack.back() = discarded;
+
+#if JSON_DIAGNOSTIC_POSITIONS
+                // Set start/end positions for discarded array.
+                handle_diagnostic_positions_for_json_value(*ref_stack.back());
+#endif
             }
         }
 
@@ -757,16 +769,13 @@ class json_sax_dom_callback_parser
                     break;
                 }
 
-                // As we handle the start and end positions for values before calling the callback
-                // we do not expect this to be called.
-                // LCOV_EXCL_START
                 case value_t::discarded:
                 {
                     v.end_position = std::string::npos;
                     v.start_position = v.end_position;
                     break;
                 }
-                // LCOV_EXCL_STOP
+
                 case value_t::binary:
                 case value_t::number_integer:
                 case value_t::number_unsigned:
@@ -775,6 +784,7 @@ class json_sax_dom_callback_parser
                     v.start_position = v.end_position - m_lexer_ref->get_string().size();
                     break;
                 }
+
                 case value_t::object:
                 case value_t::array:
                 {
