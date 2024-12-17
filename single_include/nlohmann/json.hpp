@@ -9277,12 +9277,16 @@ class json_sax_dom_callback_parser
                     break;
                 }
 
+                // As we handle the start and end positions for values before calling the callback
+                // we do not expect this to be called.
+                // LCOV_EXCL_START
                 case value_t::discarded:
                 {
                     v.end_position = std::string::npos;
                     v.start_position = v.end_position;
                     break;
                 }
+                // LCOV_EXCL_STOP
                 case value_t::binary:
                 case value_t::number_integer:
                 case value_t::number_unsigned:
@@ -9298,11 +9302,13 @@ class json_sax_dom_callback_parser
                     // skip setting the values here.
                     break;
                 }
+                // LCOV_EXCL_START
                 default:
                 {
                     // Handle all possible types discretely, default handler should never be reached.
-                    JSON_ASSERT(false); // NOLINT(cert-dcl03-c,hicpp-static-assert,misc-static-assert,-warnings-as-errors)
+                    JSON_ASSERT(false); // NOLINT(cert-dcl03-c,hicpp-static-assert,misc-static-assert,-warnings-as-errors) // LCOV_EXCL_LINE
                 }
+                    // LCOV_EXCL_STOP
             }
         }
     }
@@ -21060,8 +21066,8 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         : json_base_class_t(std::forward<json_base_class_t>(other)),
           m_data(std::move(other.m_data)) // cppcheck-suppress[accessForwarded] TODO check
 #if JSON_DIAGNOSTIC_POSITIONS
-        , start_position(other.start_position)
-        , end_position(other.end_position)
+        , start_position(other.start_position) // cppcheck-suppress[accessForwarded] TODO check
+        , end_position(other.end_position) // cppcheck-suppress[accessForwarded] TODO check
 #endif
     {
         // check that passed value is valid
