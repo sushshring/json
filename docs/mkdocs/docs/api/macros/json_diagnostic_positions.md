@@ -10,9 +10,7 @@ When enabled, two new properties: `start_pos()` and `end_pos()` are added to `nl
 that JSON object/field in the original string the object was parsed from. Likewise, `end_pos()` returns the end position of that JSON object/field in the
 original string the object was parsed from.
 
-For objects and arrays, the start position represents the position of the opening brace or bracket. The end position is the character after the closing
-brace or bracket. For fields, the start position represents the opening quote or first character in field's numerical or predefined (true/false/null) value,
-the end position represents the character after the closing quote or the character after the last character in the field's numerical or predefined value.
+`start_pos()` returns the first character of a given element in the original JSON string, while `end_pos()` returns the character following the last character. For objects and arrays, the first and last characters correspond to the opening or closing braces/brackets, respectively. For fields, the first and last character represent the opening and closing quotes or the first and last character of the field's numerical or predefined value (true/false/null), respectively.
 
 Given the above, `end_pos() - start_pos()` for an object or field provides the length of the string representation for that object or field, including the
 opening or closing braces, brackets, or quotes.
