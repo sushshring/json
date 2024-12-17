@@ -53,5 +53,6 @@ When the macro is not defined, the library will define it to its default value.
     ```
 
     The output shows the start/end positions of all the objects and fields in the JSON string.
+
 ## Version history
 
