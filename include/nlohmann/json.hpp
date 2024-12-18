@@ -3426,6 +3426,7 @@ class basic_json // NOLINT(cppcoreguidelines-special-member-functions,hicpp-spec
         }
 
         m_data.m_value.object->insert(first.m_it.object_iterator, last.m_it.object_iterator);
+        set_parents();
     }
 
     /// @brief updates a JSON object from another object, overwriting existing keys
