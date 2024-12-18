@@ -397,13 +397,9 @@ class json_sax_dom_parser
                     // skip setting the values here.
                     break;
                 }
-                // LCOV_EXCL_START
-                default:
-                {
+                default: // LCOV_EXCL_LINE
                     // Handle all possible types discretely, default handler should never be reached.
-                    JSON_ASSERT(false); // NOLINT(cert-dcl03-c,hicpp-static-assert,misc-static-assert,-warnings-as-errors)
-                }
-                // LCOV_EXCL_STOP
+                    JSON_ASSERT(false); // NOLINT(cert-dcl03-c,hicpp-static-assert,misc-static-assert,-warnings-as-errors) LCOV_EXCL_LINE
             }
         }
     }
@@ -792,13 +788,9 @@ class json_sax_dom_callback_parser
                     // skip setting the values here.
                     break;
                 }
-                // LCOV_EXCL_START
-                default:
-                {
+                default: // LCOV_EXCL_LINE
                     // Handle all possible types discretely, default handler should never be reached.
-                    JSON_ASSERT(false); // NOLINT(cert-dcl03-c,hicpp-static-assert,misc-static-assert,-warnings-as-errors)
-                }
-                // LCOV_EXCL_STOP
+                    JSON_ASSERT(false); // NOLINT(cert-dcl03-c,hicpp-static-assert,misc-static-assert,-warnings-as-errors) LCOV_EXCL_LINE
             }
         }
     }
