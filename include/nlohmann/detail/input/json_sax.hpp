@@ -403,7 +403,7 @@ class json_sax_dom_parser
                     // Handle all possible types discretely, default handler should never be reached.
                     JSON_ASSERT(false); // NOLINT(cert-dcl03-c,hicpp-static-assert,misc-static-assert,-warnings-as-errors)
                 }
-                    // LCOV_EXCL_STOP
+                // LCOV_EXCL_STOP
             }
         }
     }
@@ -798,7 +798,7 @@ class json_sax_dom_callback_parser
                     // Handle all possible types discretely, default handler should never be reached.
                     JSON_ASSERT(false); // NOLINT(cert-dcl03-c,hicpp-static-assert,misc-static-assert,-warnings-as-errors)
                 }
-                    // LCOV_EXCL_STOP
+                // LCOV_EXCL_STOP
             }
         }
     }
